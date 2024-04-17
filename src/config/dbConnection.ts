@@ -1,7 +1,9 @@
 import { Sequelize } from "sequelize";
 import { env } from "../utils/env";
 
-const sequelize = new Sequelize(env.db_url);
+const envT = process.env.NODE_ENV;
+
+const sequelize = new Sequelize(envT === "test" ? env.test_db_url : env.db_url);
 
 export const connect = async () => {
   try {
