@@ -1,0 +1,52 @@
+name: Eagle e-commerce CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+  pull_request:
+    branches:
+      - main
+      - dev
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Building code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Running test
+        env:
+          DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
+          TEST_DB: ${{ secrets.TEST_DB }}
+        run: npm run test
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: soleil00/eagles-ec-be
+
+      - name: Trigger Render Deployment
+        env:
+          RENDER_DEPLOYMENT_HOOK_URL: ${{ secrets.RENDER_DEPLOYMENT_HOOK_URL }}
+        run: |
+          curl -X POST $RENDER_DEPLOYMENT_HOOK_URL
