@@ -1,5 +1,5 @@
 import {Model,DataTypes} from 'sequelize';
-import { testSequelize } from '../../config/testDbConfig';
+import sequelize from '../../config/dbConnection';
 
 export interface UserAttributes{
   id?:number,
@@ -53,7 +53,7 @@ class User extends Model<UserAttributes> implements UserAttributes{
       type: DataTypes.DATE,
     },
   }, {
-    sequelize:testSequelize,
+    sequelize:sequelize,
     modelName: 'users',
   });
 

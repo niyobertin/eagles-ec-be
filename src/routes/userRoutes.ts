@@ -7,8 +7,7 @@ from "../controllers/userControllers";
 const userRoutes = Router();
 
 userRoutes.get("/",  fetchAllUsers);
-
-userRoutes.post("/users/register", createUserController)
+userRoutes.post("/", createUserController)
 
 
 export default userRoutes;

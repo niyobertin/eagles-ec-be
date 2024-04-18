@@ -30,19 +30,21 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const {name, email, username, password } = req.body;
+    const { name, email, username, password } = req.body;
     const user = await createUserService(name, email, username, password);
     if (!user) {
-      return res.status(400).json({
-         status: 400,
-         message: 'User already exists' });
+      return res.status(409).json({ 
+        status: 409, 
+        message: 'User already exists' });
     }
     res.status(201).json({ 
       status: 201, 
-      message: "User successfully created." });
-  } catch (err:any) {
+      message: "User successfully created." 
+    });
+    
+  } catch (err: any) {
     if (err.name === 'UnauthorizedError' && err.message === 'User already exists') {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(409).json({ error: 'User already exists' });
     }
     res.status(500).json({ error: err });
   }
