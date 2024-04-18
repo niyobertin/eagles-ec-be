@@ -2,7 +2,7 @@ import request from "supertest";
 import { beforeAll, afterAll, jest, test } from "@jest/globals";
 import app from "../src/utils/server";
 import { testDbConnection, testSequelize } from "../src/config/testDbConfig";
-import User from "../src/sequelize/models/user";
+import User from "../src/sequelize/models/users";
 import * as userServices from "../src/services/user.service";
 
 describe("Testing user Routes", () => {
