@@ -13,3 +13,18 @@ export const getAllUsers = async () => {
     throw new Error(error.message);
   }
 };
+
+export const loggedInUser = async(email:string) => {
+  try{
+    const user:any = await User.findOne({
+      where: { email: email }
+    });
+    if(!user){
+        return false;
+    }else{
+        return user;
+    }
+}catch(err:any){
+    throw new Error(err.message);
+};
+};
