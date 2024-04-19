@@ -1,3 +1,5 @@
+import { response } from "express"
+
 export const userSchema = {
     type: "object",
     properties: {
@@ -36,3 +38,35 @@ export const getUsers = {
       },
     },
   }
+
+  export const createUsers = {
+    
+      tags: ["Users"],
+      summary: "Register a new user",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/User",
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: "Created",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/User",
+              },
+            },
+          },
+        },
+        400: {
+          description: "Bad request",
+        },
+      },
+    }
+  

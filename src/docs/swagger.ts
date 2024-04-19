@@ -1,7 +1,7 @@
 import express from "express";
 import { serve, setup } from "swagger-ui-express";
 import { env } from "../utils/env";
-import { getUsers, userSchema } from "./users";
+import { createUsers, getUsers, userSchema } from "./users";
 
 const docRouter = express.Router();
 
@@ -29,8 +29,9 @@ const options = {
 
     paths: {
         "/api/v1/users": {
-            get: getUsers
-        }
+            get: getUsers,
+            post: createUsers
+        },
     },
 
     components: {
