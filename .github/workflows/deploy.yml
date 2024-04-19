@@ -43,7 +43,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: soleil00/eagles-ec-be
+          slug: atlp-rwanda/eagles-ec-be
 
       - name: Trigger Render Deployment
         env:

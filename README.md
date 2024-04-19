@@ -2,7 +2,7 @@
 
 <div style="display: flex; justify-content: center;" align="center">
 <img src="https://codecov.io/gh/soleil00/eagles-ec-be/branch/dev/graph/badge.svg?token=9c1e8e93-1062-4e49-a58d-b2777a75fb70" alt="Codecov" >
-     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/soleil00/eagles-ec-be/test.yml" >
+     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/atlp-rwanda/eagles-ec-be/deploy.yml" >
 <a href="https://codeclimate.com/github/atlp-rwanda/eagles-ec-be/maintainability"><img src="https://api.codeclimate.com/v1/badges/dfe8454356fb9da65407/maintainability" /></a>
 
 </div>

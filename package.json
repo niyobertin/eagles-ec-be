@@ -16,6 +16,8 @@
   "author": "atlp",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
@@ -31,6 +33,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jest": "^28.2.0",
+    "globals": "^15.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
@@ -38,13 +41,16 @@
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.0"
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
+    "cryptr": "^6.3.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",

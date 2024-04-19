@@ -1,5 +1,6 @@
 import { errors } from "undici-types";
-import User from "../sequelize/models/user";
+import User from "../sequelize/models/users";
+import { hashedPassword } from "../helpers/hashPassword";
 
 export const getAllUsers = async () => {
   try {
@@ -27,4 +28,18 @@ export const loggedInUser = async(email:string) => {
 }catch(err:any){
     throw new Error(err.message);
 };
+};
+export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser) {
+    return null; 
+  }
+  const hashPassword = await hashedPassword(password);
+  const user = await User.create({ name, email, username, password: hashPassword });
+  return user;
+};
+
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  const user = await User.findOne({ where: { email } });
+  return user;
 };
