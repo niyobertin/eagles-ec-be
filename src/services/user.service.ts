@@ -15,6 +15,20 @@ export const getAllUsers = async () => {
   }
 };
 
+export const loggedInUser = async(email:string) => {
+  try{
+    const user:any = await User.findOne({
+      where: { email: email }
+    });
+    if(!user){
+        return false;
+    }else{
+        return user;
+    }
+}catch(err:any){
+    throw new Error(err.message);
+};
+};
 export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {

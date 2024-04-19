@@ -19,6 +19,18 @@ export const userSchema = {
     },
 }
 
+export const loginSchema ={
+  properties :{
+    email: {
+      type: "string",
+      format: "email",
+    },
+    password: {
+      type: "string",
+    },
+  }
+}
+
 export const getUsers = {
     tags: ["Users"],
     summary: "Get all users",
@@ -69,4 +81,24 @@ export const getUsers = {
         },
       },
     }
+
+    export const loginAsUser ={
+        tags: ["Users"],
+        summary: "Login as user",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: "OK",
+          }
+        }
+    };
   
