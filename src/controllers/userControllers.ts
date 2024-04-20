@@ -56,14 +56,17 @@ export const userLogin =  async(req:Request,res:Response) =>{
 
 
 export const createUserController = async (req: Request, res: Response) => {
-  try {
+  try {  
     const { name, email, username, password } = req.body;
     const user = await createUserService(name, email, username, password);
+    
     if (!user) {
       return res.status(409).json({ 
         status: 409, 
-        message: 'User already exists' });
+        message: 'Username or email already exists' 
+      });
     }
+    
     res.status(201).json({ 
       status: 201, 
       message: "User successfully created." 

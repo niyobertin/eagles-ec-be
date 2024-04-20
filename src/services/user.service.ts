@@ -1,6 +1,7 @@
 import { errors } from "undici-types";
 import User from "../sequelize/models/users";
-import { hashedPassword } from "../helpers/hashPassword";
+import { hashedPassword } from "../utils/hashPassword";
+import { Op } from "sequelize";
 
 export const getAllUsers = async () => {
   try {
@@ -30,7 +31,11 @@ export const loggedInUser = async(email:string) => {
 };
 };
 export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
-  const existingUser = await User.findOne({ where: { email } });
+  const existingUser = await User.findOne({ 
+    where: { 
+      [Op.or]: [{ email }, { username }] 
+    } 
+  });
   if (existingUser) {
     return null; 
   }

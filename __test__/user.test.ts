@@ -44,14 +44,14 @@ test('should return 409 when registering with an existing email', async () => {
   .send(userData); 
   expect(response.status).toBe(409); }, 20000); 
 
-test('should return 500 when registering with an invalid credential', async () => { 
+test('should return 400 when registering with an invalid credential', async () => { 
   const userData = { 
   email: 'test@mail.com', name: "", username: 'existinguser', }; 
   const response = await request(app) 
   .post('/api/v1/users/register')
    .send(userData); 
    
-   expect(response.status).toBe(500); }, 20000); });
+   expect(response.status).toBe(400); }, 20000); });
 
   test("should return all users in db --> given '/api/v1/users'", async () => {
     const spy = jest.spyOn(User, "findAll");
