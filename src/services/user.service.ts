@@ -55,3 +55,9 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   });
   return user;
 };
+
+export const updateUserPassword = async (user: User, password: string) => {
+    user.password = password;
+    const update = await user.save;
+    return update;
+}
