@@ -17,6 +17,21 @@ export const userSchema = {
   },
 };
 
+export const updatePasswordSchema = {
+  type: "object",
+  properties: {
+    oldPassword: {
+      type: "string",
+    },
+    newPassword: {
+      type: "string",
+    },
+    confirmPassword: {
+      type: "string",
+    },
+  },
+};
+
 export const loginSchema = {
   properties: {
     email: {
@@ -95,6 +110,71 @@ export const loginAsUser = {
   responses: {
     200: {
       description: "OK",
+    },
+    400: {
+      description: "Bad request missing or extra filed",
+    },
+    404: {
+      description: "Account not found",
+    },
+    409: {
+      description: "Invalid credentials",
+    },
+    500: {
+      description: "Internal server error",
+    },
+  },
+};
+
+export const passwordUpdate = {
+  tags: ["Users"],
+  security: [{ bearerAuth: [] }],
+  summary: "Update Password",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          $ref: "#/components/schemas/updatePassword",
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "OK",
+    },
+    400: {
+      description: "Bad Request",
+    },
+  },
+};
+export const verifyOTPToken = {
+  tags: ["Users"],
+  summary: "verify OTP token for seller during login process",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          properties: {
+            token: {
+              type: "number",
+            },
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Successfuly logged in ",
+    },
+    403: {
+      description: "forbidden token expired",
+    },
+    404: {
+      description: "Inavalid token or not found",
     },
   },
 };

@@ -4,7 +4,7 @@ export interface IUser {
   username: string;
   email: string;
   password: string;
-  isMerchant?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  role: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }

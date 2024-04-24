@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import Token from "../sequelize/models/Token";
 
 const homeRoute = Router();
 

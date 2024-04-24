@@ -34,6 +34,13 @@ jobs:
         env:
           DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
           TEST_DB: ${{ secrets.TEST_DB }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}},
+          GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}},
+          GOOGLE_CALLBACK_URL: ${{secrets.GOOGLE_CALLBACK_URL}},
         run: npm run test
 
       - name: Build application
