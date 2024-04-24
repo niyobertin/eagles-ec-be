@@ -4,12 +4,21 @@ import {
     createUserController,
     userLogin  } 
 from "../controllers/userControllers";
+import { 
+    emailValidation,
+    validateSchema,
+ } from "../middleware/validator";
+import signUpSchema from "../schemas/signUpSchema";
 
 const userRoutes = Router();
 
 userRoutes.get("/", fetchAllUsers);
 userRoutes.post('/login',userLogin);
-userRoutes.post("/register", createUserController)
+userRoutes.post("/register", 
+ emailValidation, 
+ validateSchema(signUpSchema), 
+ createUserController
+)
 
 
-export default userRoutes;
+export default userRoutes;  
