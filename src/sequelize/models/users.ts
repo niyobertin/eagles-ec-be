@@ -1,27 +1,32 @@
-import {Model,DataTypes} from 'sequelize';
-import sequelize from '../../config/dbConnection';
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../../config/dbConnection";
 
-export interface UserAttributes{
-  id?:number,
-  name: string,
-  username: string,
-  email:string,
-  password:string,
-  createdAt?:Date,
-  updatedAt?:Date
+export interface UserAttributes {
+  id?: number;
+  name: string;
+  username: string;
+  email: string;
+  isMerchant?: boolean;
+  twoFAEnabled?: boolean;
+  password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-class User extends Model<UserAttributes> implements UserAttributes{
+class User extends Model<UserAttributes> implements UserAttributes {
   id!: number | undefined;
   name!: string;
   username!: string;
   email!: string;
+  twoFAEnabled!: boolean;
+  isMerchant!: boolean;
   password!: string;
   createdAt!: Date | undefined;
   updatedAt1: Date | undefined;
 }
 
-  User.init({
+User.init(
+  {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -31,18 +36,26 @@ class User extends Model<UserAttributes> implements UserAttributes{
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-   },
+    },
     username: {
-          type: DataTypes.STRING,
-          allowNull: false,
-     },
-    email:{
-      allowNull:false,
-      type:DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
+    isMerchant: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    twoFAEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     password: {
-      allowNull:false,
-      type:DataTypes.STRING
+      allowNull: false,
+      type: DataTypes.STRING,
     },
     createdAt: {
       allowNull: false,
@@ -52,9 +65,11 @@ class User extends Model<UserAttributes> implements UserAttributes{
       allowNull: false,
       type: DataTypes.DATE,
     },
-  }, {
-    sequelize:sequelize,
-    modelName: 'users',
-  });
+  },
+  {
+    sequelize: sequelize,
+    modelName: "users",
+  }
+);
 
-  export default User;
+export default User;
