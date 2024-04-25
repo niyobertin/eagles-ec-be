@@ -1,4 +1,3 @@
-import { errors } from "undici-types";
 import User from "../sequelize/models/users";
 import { hashedPassword } from "../utils/hashPassword";
 import { Op } from "sequelize";
@@ -16,35 +15,43 @@ export const getAllUsers = async () => {
   }
 };
 
-export const loggedInUser = async(email:string) => {
-  try{
-    const user:any = await User.findOne({
-      where: { email: email }
+export const loggedInUser = async (email: string) => {
+  try {
+    const user: any = await User.findOne({
+      where: { email: email },
     });
-    if(!user){
-        return false;
-    }else{
-        return user;
+    if (!user) {
+      return false;
+    } else {
+      return user;
     }
-}catch(err:any){
+  } catch (err: any) {
     throw new Error(err.message);
+  }
 };
-};
+
 export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
-  const existingUser = await User.findOne({ 
-    where: { 
-      [Op.or]: [{ email }, { username }] 
-    } 
+  const existingUser = await User.findOne({
+    where: {
+      [Op.or]: [{ email }, { username }],
+    },
   });
   if (existingUser) {
-    return null; 
+    return null;
   }
   const hashPassword = await hashedPassword(password);
-  const user = await User.create({ name, email, username, password: hashPassword });
+  const user = await User.create({
+    name,
+    email,
+    username,
+    password: hashPassword,
+  });
   return user;
 };
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({
+    where: { email },
+  });
   return user;
 };
