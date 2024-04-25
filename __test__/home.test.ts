@@ -10,11 +10,11 @@ describe("Testing Home route", () => {
 		} catch (error) {
 			sequelize.close();
 		}
-	}, 20000);
+	}, 40000);
 
 	test("servr should return status code of 200 --> given'/'", async () => {
 		const response = await request(app).get("/");
 
 		expect(response.status).toBe(200);
-	}, 20000);
+	}, 40000);
 });

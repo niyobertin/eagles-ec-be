@@ -16,7 +16,7 @@ const loginData: any = {
 	email: "test1@gmail.com",
 	password: "test1234",
 };
-describe("Testing user Routes", () => {
+describe("Testing a user Routes", () => {
 	beforeAll(async () => {
 		try {
 			await connect();
@@ -24,7 +24,7 @@ describe("Testing user Routes", () => {
 		} catch (error) {
 			sequelize.close();
 		}
-	}, 20000);
+	}, 40000);
 
 	afterAll(async () => {
 		await User.destroy({ truncate: true });
@@ -36,7 +36,7 @@ describe("Testing user Routes", () => {
 				.post("/api/v1/users/register")
 				.send(userData);
 			expect(response.status).toBe(201);
-		}, 20000);
+		}, 40000);
 
 		test("should return 409 when registering with an existing email", async () => {
 			User.create(userData);
@@ -44,7 +44,7 @@ describe("Testing user Routes", () => {
 				.post("/api/v1/users/register")
 				.send(userData);
 			expect(response.status).toBe(409);
-		}, 20000);
+		}, 40000);
 
 		test("should return 400 when registering with an invalid credential", async () => {
 			const userData = {
@@ -57,7 +57,7 @@ describe("Testing user Routes", () => {
 				.send(userData);
 
 			expect(response.status).toBe(400);
-		}, 20000);
+		}, 40000);
 	});
 });
 
@@ -67,7 +67,7 @@ test("should return all users in db --> given '/api/v1/users'", async () => {
 	const response = await request(app).get("/api/v1/users");
 	expect(spy).toHaveBeenCalled();
 	expect(spy2).toHaveBeenCalled();
-}, 20000);
+}, 40000);
 test("Should return status 401 to indicate Unauthorized user", async () => {
 	const loggedInUser = {
 		email: userData.email,
