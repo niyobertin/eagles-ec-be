@@ -1,7 +1,15 @@
 import express from "express";
 import { serve, setup } from "swagger-ui-express";
 import { env } from "../utils/env";
-import { createUsers, getUsers, loginAsUser, userSchema, loginSchema } from "./users";
+import { 
+  createUsers, 
+  getUsers,
+  loginAsUser,
+   userSchema,
+   loginSchema,
+   updatePasswordSchema,
+   passwordUpdate
+  } from "./users";
 
 const docRouter = express.Router();
 
@@ -43,12 +51,16 @@ const options = {
     "/api/v1/users/login": {
       post: loginAsUser,
     },
+    "/api/v1/users/passwordupdate": {
+      put: passwordUpdate
+    }
   },
 
   components: {
     schemas: {
       User: userSchema,
       Login: loginSchema,
+      updatePassword: updatePasswordSchema
     },
     securitySchemes: {
       bearerAuth: {
@@ -59,8 +71,9 @@ const options = {
         name: "Authorization",
       },
     },
-  },
-};
+  }
+
+}
 
 docRouter.use("/", serve, setup(options));
 

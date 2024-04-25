@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
 import { generateToken } from "../utils/jsonwebtoken";
-import { comparePasswords } from "../helpers/comparePassword";
-import { loggedInUser } from "../services/user.service";
-import { createUserService } from "../services/user.service";
+import { comparePasswords } from "../utils/comparePassword";
+import { loggedInUser} from "../services/user.service";
+import { createUserService, getUserByEmail, updateUserPassword } from "../services/user.service";
+import { hashedPassword } from "../utils/hashPassword";
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
@@ -79,3 +80,35 @@ export const createUserController = async (req: Request, res: Response) => {
     res.status(500).json({ error: err });
   }
 };
+
+export const updatePassword = async (req: Request, res: Response) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  try {
+    // @ts-ignore
+    const user = await getUserByEmail(req.user.email);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const isPasswordValid = await comparePasswords(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+  
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'New password and confirm password do not match' });
+    }
+
+    if(await comparePasswords(newPassword, user.password)){
+      return res.status(400).json({ message: 'New password is similar to the old one. Please use a new password'})
+    }
+
+    const password = await hashedPassword(newPassword);
+    await updateUserPassword(user, password)
+    return res.status(200).json({ message: 'Password updated successfully' });
+
+  } catch(err: any){
+    return res.status(500).json({
+      message: err.message
+    })
+  }
+}

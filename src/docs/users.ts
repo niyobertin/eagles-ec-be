@@ -17,6 +17,21 @@ export const userSchema = {
   },
 };
 
+export const updatePasswordSchema = {
+  type: "object",
+  properties: {
+    oldPassword: {
+      type: "string",
+    },
+    newPassword: {
+      type: "string",
+    },
+    confirmPassword: {
+      type: "string",
+    }
+  }
+}
+
 export const loginSchema = {
   properties: {
     email: {
@@ -82,19 +97,34 @@ export const createUsers = {
 export const loginAsUser = {
   tags: ["Users"],
   summary: "Login as user",
+        responses: {
+          200: {
+            description: "OK",
+          }
+        }
+    };
+
+export const passwordUpdate = {
+  tags: ["Users"],
+  security: [{ bearerAuth: [] }],
+  summary: "Update Password",
   requestBody: {
     required: true,
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/Login",
-        },
-      },
-    },
+          $ref: "#/components/schemas/updatePassword"
+        }
+      }
+    }
   },
   responses: {
     200: {
       description: "OK",
     },
-  },
-};
+    400: {
+      description: "Bad Request"
+    }
+  }
+}
+  
