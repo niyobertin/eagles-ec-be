@@ -1,10 +1,10 @@
 export interface IUser {
-	id?: number;
-	name: string;
-	username: string;
-	email: string;
-	password: string;
-	isMerchant?: boolean;
-	createdAt: Date;
-	updatedAt: Date;
+  id?: number;
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  isMerchant?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
