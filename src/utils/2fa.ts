@@ -1,8 +1,8 @@
 import { IUser, SUBJECTS } from "../types";
 import { generateMagicLinkToken, generateToken } from "../utils/jsonwebtoken";
 import { env } from "../utils/env";
-const verifyOtpTemplate = require("./verifyotp");
 import transporter from "./transporter";
+import { verifyOtpTemplate } from "./verifyotp";
 
 export const sendOTP = async (user: IUser) => {
   try {
