@@ -28,9 +28,9 @@ export const updatePasswordSchema = {
     },
     confirmPassword: {
       type: "string",
-    }
-  }
-}
+    },
+  },
+};
 
 export const loginSchema = {
   properties: {
@@ -97,12 +97,34 @@ export const createUsers = {
 export const loginAsUser = {
   tags: ["Users"],
   summary: "Login as user",
-        responses: {
-          200: {
-            description: "OK",
-          }
-        }
-    };
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          $ref: "#/components/schemas/Login",
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "OK",
+    },
+    400: {
+      description: "Bad request missing or extra filed",
+    },
+    404: {
+      description: "Account not found",
+    },
+    409: {
+      description: "Invalid credentials",
+    },
+    500: {
+      description: "Internal server error",
+    },
+  },
+};
 
 export const passwordUpdate = {
   tags: ["Users"],
@@ -113,18 +135,17 @@ export const passwordUpdate = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/updatePassword"
-        }
-      }
-    }
+          $ref: "#/components/schemas/updatePassword",
+        },
+      },
+    },
   },
   responses: {
     200: {
       description: "OK",
     },
     400: {
-      description: "Bad Request"
-    }
-  }
-}
-  
+      description: "Bad Request",
+    },
+  },
+};

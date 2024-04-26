@@ -1,4 +1,4 @@
-const verifyOtpTemplate = (url) => {
+export const verifyOtpTemplate = (url: string) => {
   return `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -22,5 +22,3 @@ const verifyOtpTemplate = (url) => {
         </html>
 `;
 };
-
-module.exports = verifyOtpTemplate;
