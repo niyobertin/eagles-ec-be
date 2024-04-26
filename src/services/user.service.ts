@@ -74,7 +74,6 @@ export const findUserById = async (id: string) => {
   }
 };
 export const updateUserPassword = async (user: User, password: string) => {
-  user.password = password;
-  const update = await user.save;
-  return update;
+  const update = await User.update({ password: password}, { where: { id: user.id}})
+  return update
 };
