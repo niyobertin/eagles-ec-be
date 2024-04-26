@@ -1,5 +1,6 @@
-import { Model, DataTypes } from "sequelize";
-import sequelize from "../../config/dbConnection";
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../../config/dbConnection';
+import Profile from './profiles';
 
 export interface UserAttributes {
   id?: number;
@@ -20,7 +21,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   role!: string[];
   password!: string;
   createdAt!: Date | undefined;
-  updatedAt1: Date | undefined;
+  updatedAt!: Date | undefined;
 }
 
 User.init(
@@ -61,9 +62,19 @@ User.init(
     },
   },
   {
-    sequelize: sequelize,
-    modelName: "users",
-  },
-);
+    sequelize,
+    modelName: 'users',
+  });
+  
+  User.hasOne(Profile, {
+    foreignKey: 'userId',
+    as: 'profile'
+  });
+  
+  Profile.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+  });
+
 
 export default User;

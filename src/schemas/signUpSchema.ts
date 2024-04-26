@@ -8,4 +8,31 @@ export const signUpSchema = Joi.object({
   role: Joi.string().optional(),
 }).options({ allowUnknown: false });
 
-export default signUpSchema;
+
+
+export const profileSchemas = Joi.object({
+    profileImage: Joi.string()
+    .optional(),
+    fullName: Joi.string()
+    .optional(),
+    gender: Joi.string()
+    .valid('Male', 'Female', 'Other')
+    .optional(),
+    birthdate: Joi.date()
+    .max("now")
+    .optional(),
+    preferredLanguage: Joi.string()
+    .optional(),
+    preferredCurrency: Joi.string()
+    .optional(),
+    street: Joi.string()
+    .optional(),
+    city: Joi.string()
+    .optional(),
+    state: Joi.string()
+    .optional(),
+    postalCode: Joi.string()
+    .optional(),
+    country: Joi.string()
+    .optional()
+})

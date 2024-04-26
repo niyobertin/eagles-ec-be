@@ -2,6 +2,8 @@ import User from "../sequelize/models/users";
 import { hashedPassword } from "../utils/hashPassword";
 import passport from "passport";
 import { Op } from "sequelize";
+import Profile, { ProfileAttributes } from "../sequelize/models/profiles";
+
 
 export const authenticateUser = passport.authenticate("google", {
   scope: ["email", "profile"],
@@ -51,6 +53,22 @@ export const createUserService = async (name: string, email: string, username: s
       password: hashPassword,
       role: [role],
     });
+    await Profile.create({ 
+      // @ts-ignore
+      userId: user.id,
+      profileImage:"",
+      fullName: "", 
+      email: "",
+      gender: "", 
+      birthdate: "", 
+      preferredLanguage: "", 
+      preferredCurrency: "", 
+      street: "",
+      city: "",
+      state: "",
+      postalCode:"",
+      country: "",
+     });
     return user;
   } else {
     user = await User.create({
@@ -59,8 +77,25 @@ export const createUserService = async (name: string, email: string, username: s
       username,
       password: hashPassword,
     });
+    await Profile.create({ 
+      // @ts-ignore
+      userId: user.id,
+      profileImage:"",
+      fullName: "", 
+      email: "",
+      gender: "", 
+      birthdate: "", 
+      preferredLanguage: "", 
+      preferredCurrency: "", 
+      street: "",
+      city: "",
+      state: "",
+      postalCode:"",
+      country: "",
+     });
     return user;
   }
+ 
 };
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
@@ -87,3 +122,30 @@ export const updateUserPassword = async (user: User, password: string) => {
   const update = await User.update({ password: password}, { where: { id: user.id}})
   return update
 };
+
+export const getProfileServices = async (userId: number) =>{
+   try {
+    const getProfile = await Profile.findOne({where: {userId}})
+    return getProfile;
+   } catch (error) {
+    throw new Error ("error during retrieve profile")
+   }
+}
+
+export const updateProfileServices = async (
+    userId: number, 
+    profileData: Partial<
+    import("../sequelize/models/profiles")
+    .ProfileAttributes >) => {
+    try {
+        const profile = await Profile.findOne({where: {userId}});
+        
+        if (!profile) {
+            throw new Error("No Profile found");
+        }
+       
+        await profile.update(profileData)
+    } catch (error) {
+       throw new Error("Error in update profile");
+    }
+}

@@ -1,10 +1,12 @@
 import request from "supertest";
-import { beforeAll, afterAll, jest, test } from "@jest/globals";
+import { beforeAll, beforeEach, afterEach, afterAll, test } from "@jest/globals";
 import app from "../src/utils/server";
 import User from "../src/sequelize/models/users";
 import * as userServices from "../src/services/user.service";
 import * as mailServices from "../src/services/mail.service";
 import sequelize, { connect } from "../src/config/dbConnection";
+// import * as twoFAService from "../src/utils/2fa";
+import { profile } from "console";
 
 const userData: any = {
   name: "yvanna5",
@@ -30,23 +32,37 @@ const loginData: any = {
   email: "test1@gmail.com",
   password: "test1234",
 };
+ 
+const updateData:any = { 
+  // @ts-ignore
+  userId: userData.id,
+  profileImage: "",
+  fullName: "Patrick alex", 
+  email: userData.email,
+  gender: "", 
+  birthdate: "", 
+  preferredLanguage: "", 
+  preferredCurrency: "", 
+  street: "",
+  city: "",
+  state: "",
+  postalCode:"",
+  country: "Rwanda",
+ }
+
 describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
       await connect();
+      await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');
       const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
     } catch (error) {
-      throw error;
-      sequelize.close();
+      console.error('Error connecting to the database:', error);
     }
   }, 40000);
 
-  afterAll(async () => {
-    await User.destroy({ truncate: true });
-    await sequelize.close();
-  }, 20000);
 
-  let token: any;
+  let token:any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
       const response = await request(app)
@@ -75,8 +91,58 @@ describe("Testing user Routes", () => {
 
       expect(response.status).toBe(400);
     }, 20000);
-  });
 
+    test("should return token to log in", async () => {
+      const response = await request(app)
+      .post("/api/v1/users/login").send({
+        email: userData.email,
+        password: userData.password,
+      });
+      expect(response.status).toBe(200);
+      token = response.body.token;
+    });
+    
+    test('should return 200 and the user profile', async () => {
+      const response = await request(app)
+        .get('/api/v1/users/profile') 
+        .set("Authorization", "Bearer " + token);
+  
+      expect(response.status).toBe(200);
+   })
+
+    test('should return 401 when user not logged in', async () => {
+      const response = await request(app)
+        .get('/api/v1/users/profile') 
+        .set("Authorization", "Bearer " );
+  
+      expect(response.status).toBe(401);
+   })
+    test('should return 200 when user updated his profile', async () => {
+      const response = await request(app)
+        .get('/api/v1/users/profile') 
+        .send(updateData)
+        .set("Authorization", "Bearer " + token);
+  
+      expect(response.status).toBe(200);
+   })
+
+    test('should return 400 when user update empty profile', async () => {
+      const response = await request(app)
+        .patch('/api/v1/users/profile') 
+        .send({})
+        .set("Authorization", "Bearer " + token);
+  
+      expect(response.status).toBe(400);
+   })
+    test('should return 400 when user update email', async () => {
+      const response = await request(app)
+        .patch('/api/v1/users/profile') 
+        .send({email: "nyvan@gmail.com"})
+        .set("Authorization", "Bearer " + token);
+  
+      expect(response.status).toBe(400);
+   })
+   
   test("should return all users in db --> given '/api/v1/users'", async () => {
     const spy = jest.spyOn(User, "findAll");
     const spy2 = jest.spyOn(userServices, "getAllUsers");
@@ -200,3 +266,19 @@ describe("Testing user authentication", () => {
   });
   
 })
+afterAll(async () => {
+  try {
+    await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');
+  } catch (error) {
+    console.error('Error truncating tables:', error);
+  } finally {
+    try {
+      await sequelize.close();
+    } catch (error) {
+      console.error('Error closing the database connection:', error);
+    }
+  }
+});
+
+})  
+
