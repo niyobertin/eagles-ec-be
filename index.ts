@@ -7,7 +7,7 @@ app.listen(env.port, async () => {
   await sequelize
     .sync()
     .then(() => {
-      console.log(` db synced and server is running on port ${env.port}`);
+      console.log(" db synced and server is running");
     })
     .catch((error: any) => {
       console.log(error.message);

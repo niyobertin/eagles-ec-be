@@ -20,6 +20,11 @@ const dummySeller = {
   password: "1234567890",
   isMerchant: true,
 };
+const userTestData = {
+  newPassword: "Test@123",
+  confirmPassword: "Test@123",
+  wrongPassword: "Test456",
+};
 
 const loginData: any = {
   email: "test1@gmail.com",
@@ -29,44 +34,38 @@ describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
       await connect();
-      const dummy = await request(app)
-        .post("/api/v1/users/register")
-        .send(dummySeller);
+      const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
     } catch (error) {
       throw error;
       sequelize.close();
     }
-  }, 20000);
+  }, 40000);
 
   afterAll(async () => {
     await User.destroy({ truncate: true });
     await sequelize.close();
   }, 20000);
+
+  let token: any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
       expect(response.status).toBe(201);
     }, 20000);
 
     test("should return 409 when registering with an existing email", async () => {
       User.create(userData);
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
       expect(response.status).toBe(409);
     }, 20000);
 
-    test("should return 500 when registering with an invalid credential", async () => {
+    test("should return 400 when registering with an invalid credential", async () => {
       const userData = {
         email: "test@mail.com",
         name: "",
         username: "existinguser",
       };
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
 
       expect(response.status).toBe(400);
     }, 20000);
@@ -90,9 +89,7 @@ describe("Testing user Routes", () => {
       email: userData.email,
       password: loginData.password,
     });
-    const response = await request(app)
-      .post("/api/v1/users/login")
-      .send(loggedInUser);
+    const response = await request(app).post("/api/v1/users/login").send(loggedInUser);
     expect(response.body.status).toBe(401);
     spyonOne.mockRestore();
   }, 20000);
@@ -109,8 +106,73 @@ describe("Testing user Routes", () => {
       password: dummySeller.password,
     });
 
-    expect(response.body.message).toBe(
-      "Verification link has been sent to your email. Please verify it to continue"
-    );
+    expect(response.body.message).toBe("Verification link has been sent to your email. Please verify it to continue");
   }, 20000);
+
+  test("should log a user in to retrieve a token", async () => {
+    const response = await request(app).post("/api/v1/users/login").send({
+      email: userData.email,
+      password: userData.password,
+    });
+    expect(response.status).toBe(200);
+    token = response.body.token;
+  });
+
+  test("should return 400 when adding an extra field while updating password", async () => {
+    const response = await request(app)
+      .put("/api/v1/users/passwordupdate")
+      .send({
+        oldPassword: userData.password,
+        newPassword: userTestData.newPassword,
+        confirmPassword: userTestData.confirmPassword,
+        role: "seller",
+      })
+      .set("Authorization", "Bearer " + token);
+    expect(response.status).toBe(400);
+  });
+
+  test("should return 401 when updating password without authorization", async () => {
+    const response = await request(app).put("/api/v1/users/passwordupdate").send({
+      oldPassword: userData.password,
+      newPassword: userTestData.newPassword,
+      confirmPassword: userTestData.confirmPassword,
+    });
+    expect(response.status).toBe(401);
+  });
+
+  test("should return 200 when password is updated", async () => {
+    const response = await request(app)
+      .put("/api/v1/users/passwordupdate")
+      .send({
+        oldPassword: userData.password,
+        newPassword: userTestData.newPassword,
+        confirmPassword: userTestData.confirmPassword,
+      })
+      .set("Authorization", "Bearer " + token);
+    expect(response.status).toBe(200);
+  });
+
+  test("should return 400 when confirm password and new password doesn't match", async () => {
+    const response = await request(app)
+      .put("/api/v1/users/passwordupdate")
+      .send({
+        oldPassword: userData.password,
+        newPassword: userTestData.newPassword,
+        confirmPassword: userTestData.wrongPassword,
+      })
+      .set("Authorization", "Bearer " + token);
+    expect(response.status).toBe(400);
+  });
+
+  test("should return 400 when old password is incorrect", async () => {
+    const response = await request(app)
+      .put("/api/v1/users/passwordupdate")
+      .send({
+        oldPassword: userTestData.wrongPassword,
+        newPassword: userTestData.newPassword,
+        confirmPassword: userTestData.wrongPassword,
+      })
+      .set("Authorization", "Bearer " + token);
+    expect(response.status).toBe(400);
+  });
 });
