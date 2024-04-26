@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
 import { generateToken } from "../utils/jsonwebtoken";
+import * as twoFAService from "../utils/2fa";
+import { IUser, STATUS } from "../types";
 import { comparePasswords } from "../utils/comparePassword";
-import { loggedInUser} from "../services/user.service";
+import { loggedInUser } from "../services/user.service";
 import { createUserService, getUserByEmail, updateUserPassword } from "../services/user.service";
 import { hashedPassword } from "../utils/hashPassword";
 
@@ -33,7 +35,7 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
 
 export const userLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const user = await loggedInUser(email);
+  const user: IUser = await loggedInUser(email);
   const accessToken = await generateToken(user);
   if (!user) {
     res.status(404).json({
@@ -48,27 +50,33 @@ export const userLogin = async (req: Request, res: Response) => {
         message: " User email or password is incorrect!",
       });
     } else {
-      res.status(200).json({
-        status: 200,
-        message: "Logged in",
-        token: accessToken,
-      });
+      if (user?.isMerchant) {
+        await twoFAService.sendOTP(user);
+        return res.status(200).json({
+          status: STATUS.PENDING,
+          message: "Verification link has been sent to your email. Please verify it to continue",
+        });
+      } else {
+        return res.status(200).json({
+          status: 200,
+          message: "Logged in",
+          token: accessToken,
+        });
+      }
     }
   }
 };
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, email, username, password } = req.body;
-    const user = await createUserService(name, email, username, password);
-
+    const { name, email, username, password, isMerchant } = req.body;
+    const user = await createUserService(name, email, username, password, isMerchant);
     if (!user) {
       return res.status(409).json({
         status: 409,
-        message: "Username or email already exists",
+        message: "User already exists",
       });
     }
-
     res.status(201).json({
       status: 201,
       message: "User successfully created.",
@@ -87,28 +95,27 @@ export const updatePassword = async (req: Request, res: Response) => {
     // @ts-ignore
     const user = await getUserByEmail(req.user.email);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     const isPasswordValid = await comparePasswords(oldPassword, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Old password is incorrect' });
-    }
-  
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: 'New password and confirm password do not match' });
+      return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    if(await comparePasswords(newPassword, user.password)){
-      return res.status(400).json({ message: 'New password is similar to the old one. Please use a new password'})
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New password and confirm password do not match" });
+    }
+
+    if (await comparePasswords(newPassword, user.password)) {
+      return res.status(400).json({ message: "New password is similar to the old one. Please use a new password" });
     }
 
     const password = await hashedPassword(newPassword);
-    await updateUserPassword(user, password)
-    return res.status(200).json({ message: 'Password updated successfully' });
-
-  } catch(err: any){
+    await updateUserPassword(user, password);
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (err: any) {
     return res.status(500).json({
-      message: err.message
-    })
+      message: err.message,
+    });
   }
-}
+};

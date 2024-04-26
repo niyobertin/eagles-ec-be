@@ -4,6 +4,7 @@ import app from "../src/utils/server";
 import User from "../src/sequelize/models/users";
 import * as userServices from "../src/services/user.service";
 import sequelize, { connect } from "../src/config/dbConnection";
+import * as twoFAService from "../src/utils/2fa";
 
 const userData: any = {
   name: "yvanna",
@@ -12,6 +13,13 @@ const userData: any = {
   password: "test1234",
 };
 
+const dummySeller = {
+  name: "dummy",
+  username: "username",
+  email: "srukundo02@gmail.com",
+  password: "1234567890",
+  isMerchant: true,
+};
 const userTestData = {
   newPassword: "Test@123",
   confirmPassword: "Test@123",
@@ -26,8 +34,9 @@ describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
       await connect();
-      await User.destroy({ truncate: true });
+      const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
     } catch (error) {
+      throw error;
       sequelize.close();
     }
   }, 40000);
@@ -35,21 +44,18 @@ describe("Testing user Routes", () => {
   afterAll(async () => {
     await User.destroy({ truncate: true });
     await sequelize.close();
-  });
+  }, 20000);
+
   let token: any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
       expect(response.status).toBe(201);
     }, 20000);
 
     test("should return 409 when registering with an existing email", async () => {
       User.create(userData);
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
       expect(response.status).toBe(409);
     }, 20000);
 
@@ -59,9 +65,7 @@ describe("Testing user Routes", () => {
         name: "",
         username: "existinguser",
       };
-      const response = await request(app)
-        .post("/api/v1/users/register")
-        .send(userData);
+      const response = await request(app).post("/api/v1/users/register").send(userData);
 
       expect(response.status).toBe(400);
     }, 20000);
@@ -74,22 +78,36 @@ describe("Testing user Routes", () => {
     expect(spy).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   }, 20000);
+
   test("Should return status 401 to indicate Unauthorized user", async () => {
     const loggedInUser = {
       email: userData.email,
-      password: "test",
+      password: "test123456",
     };
     const spyonOne = jest.spyOn(User, "findOne").mockResolvedValueOnce({
       //@ts-ignore
       email: userData.email,
       password: loginData.password,
     });
-    const response = await request(app)
-      .post("/api/v1/users/login")
-      .send(loggedInUser);
+    const response = await request(app).post("/api/v1/users/login").send(loggedInUser);
     expect(response.body.status).toBe(401);
     spyonOne.mockRestore();
-  });
+  }, 20000);
+
+  test("Should return send magic link if seller try to login", async () => {
+    const spy = jest.spyOn(twoFAService, "sendOTP");
+    const user = {
+      email: dummySeller.email,
+      password: dummySeller.password,
+    };
+
+    const response = await request(app).post("/api/v1/users/login").send({
+      email: dummySeller.email,
+      password: dummySeller.password,
+    });
+
+    expect(response.body.message).toBe("Verification link has been sent to your email. Please verify it to continue");
+  }, 20000);
 
   test("should log a user in to retrieve a token", async () => {
     const response = await request(app).post("/api/v1/users/login").send({
@@ -114,13 +132,11 @@ describe("Testing user Routes", () => {
   });
 
   test("should return 401 when updating password without authorization", async () => {
-    const response = await request(app)
-      .put("/api/v1/users/passwordupdate")
-      .send({
-        oldPassword: userData.password,
-        newPassword: userTestData.newPassword,
-        confirmPassword: userTestData.confirmPassword,
-      });
+    const response = await request(app).put("/api/v1/users/passwordupdate").send({
+      oldPassword: userData.password,
+      newPassword: userTestData.newPassword,
+      confirmPassword: userTestData.confirmPassword,
+    });
     expect(response.status).toBe(401);
   });
 
@@ -154,7 +170,7 @@ describe("Testing user Routes", () => {
       .send({
         oldPassword: userTestData.wrongPassword,
         newPassword: userTestData.newPassword,
-        confirmPassword:userTestData.wrongPassword,
+        confirmPassword: userTestData.wrongPassword,
       })
       .set("Authorization", "Bearer " + token);
     expect(response.status).toBe(400);

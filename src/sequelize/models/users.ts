@@ -6,6 +6,8 @@ export interface UserAttributes {
   name: string;
   username: string;
   email: string;
+  isMerchant?: boolean;
+  twoFAEnabled?: boolean;
   password: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -16,6 +18,8 @@ class User extends Model<UserAttributes> implements UserAttributes {
   name!: string;
   username!: string;
   email!: string;
+  twoFAEnabled!: boolean;
+  isMerchant!: boolean;
   password!: string;
   createdAt!: Date | undefined;
   updatedAt1: Date | undefined;
@@ -40,6 +44,14 @@ User.init(
     email: {
       allowNull: false,
       type: DataTypes.STRING,
+    },
+    isMerchant: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    twoFAEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     password: {
       allowNull: false,

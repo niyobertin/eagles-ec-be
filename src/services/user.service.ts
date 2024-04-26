@@ -29,13 +29,8 @@ export const loggedInUser = async (email: string) => {
     throw new Error(err.message);
   }
 };
-
-export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
-  const existingUser = await User.findOne({
-    where: {
-      [Op.or]: [{ email }, { username }],
-    },
-  });
+export const createUserService = async (name: string, email: string, username: string, password: string, isMerchant?: boolean): Promise<User | null> => {
+  const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     return null;
   }
@@ -45,6 +40,7 @@ export const createUserService = async (name: string, email: string, username: s
     email,
     username,
     password: hashPassword,
+    isMerchant,
   });
   return user;
 };
@@ -56,8 +52,21 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   return user;
 };
 
+export const findUserById = async (id: string) => {
+  try {
+    const user = await User.findByPk(id);
+    if (user) {
+      return user;
+    } else {
+      return null;
+    }
+  } catch (error: any) {
+    console.log("error seaching user : " + error.message);
+    throw new Error(error.message);
+  }
+};
 export const updateUserPassword = async (user: User, password: string) => {
-    user.password = password;
-    const update = await user.save;
-    return update;
-}
+  user.password = password;
+  const update = await user.save;
+  return update;
+};
