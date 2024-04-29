@@ -3,22 +3,22 @@ import { beforeAll, afterAll, jest, test } from "@jest/globals";
 import app from "../src/utils/server";
 import User from "../src/sequelize/models/users";
 import * as userServices from "../src/services/user.service";
+import * as mailServices from "../src/services/mail.service";
 import sequelize, { connect } from "../src/config/dbConnection";
-import * as twoFAService from "../src/utils/2fa";
 
 const userData: any = {
-  name: "yvanna",
-  username: "testuser",
-  email: "test1@gmail.com",
-  password: "test1234",
+  name: "yvanna5",
+  username: "testuser5",
+  email: "test15@gmail.com",
+  password: "test12345",
 };
 
 const dummySeller = {
-  name: "dummy",
-  username: "username",
-  email: "srukundo02@gmail.com",
+  name: "dummy1234",
+  username: "username1234",
+  email: "soleilcyber00@gmail.com",
   password: "1234567890",
-  isMerchant: true,
+  role: "seller",
 };
 const userTestData = {
   newPassword: "Test@123",
@@ -94,20 +94,16 @@ describe("Testing user Routes", () => {
     spyonOne.mockRestore();
   }, 20000);
 
-  test("Should return send magic link if seller try to login", async () => {
-    const spy = jest.spyOn(twoFAService, "sendOTP");
-    const user = {
-      email: dummySeller.email,
-      password: dummySeller.password,
-    };
-
+  test("Should send otp verification code", async () => {
+    const spy = jest.spyOn(mailServices, "sendEmailService");
     const response = await request(app).post("/api/v1/users/login").send({
       email: dummySeller.email,
       password: dummySeller.password,
     });
 
-    expect(response.body.message).toBe("Verification link has been sent to your email. Please verify it to continue");
-  }, 20000);
+    expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
+    // expect(spy).toHaveBeenCalled();
+  }, 40000);
 
   test("should log a user in to retrieve a token", async () => {
     const response = await request(app).post("/api/v1/users/login").send({

@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
 import { generateToken } from "../utils/jsonwebtoken";
-import * as twoFAService from "../utils/2fa";
-import { IUser, STATUS } from "../types";
+import * as mailService from "../services/mail.service";
+import { IUser, STATUS, SUBJECTS } from "../types";
 import { comparePasswords } from "../utils/comparePassword";
 import { loggedInUser } from "../services/user.service";
 import { createUserService, getUserByEmail, updateUserPassword } from "../services/user.service";
 import { hashedPassword } from "../utils/hashPassword";
+import Token, { TokenAttributes } from "../sequelize/models/Token";
+import User from "../sequelize/models/users";
+import { verifyOtpTemplate } from "../email-templates/verifyotp";
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
-    // const users = await userService.getAllUsers();
-
     const users = await userService.getAllUsers();
 
     if (users.length <= 0) {
@@ -36,13 +37,14 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
 export const userLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user: IUser = await loggedInUser(email);
-  const accessToken = await generateToken(user);
-  if (!user) {
+  let accessToken;
+  if (!user || user === null) {
     res.status(404).json({
       status: 404,
       message: "User Not Found ! Please Register new ancount",
     });
   } else {
+    accessToken = await generateToken(user);
     const match = await comparePasswords(password, user.password);
     if (!match) {
       res.status(401).json({
@@ -50,11 +52,14 @@ export const userLogin = async (req: Request, res: Response) => {
         message: " User email or password is incorrect!",
       });
     } else {
-      if (user?.isMerchant) {
-        await twoFAService.sendOTP(user);
+      if (user.role.includes("seller")) {
+        const token = Math.floor(Math.random() * 90000 + 10000);
+        //@ts-ignore
+        await Token.create({ token: token, userId: user.id });
+        await mailService.sendEmailService(user, SUBJECTS.CONFIRM_2FA, verifyOtpTemplate(token), token);
         return res.status(200).json({
           status: STATUS.PENDING,
-          message: "Verification link has been sent to your email. Please verify it to continue",
+          message: "OTP verification code has been sent ,please use it to verify that it was you",
         });
       } else {
         return res.status(200).json({
@@ -69,23 +74,24 @@ export const userLogin = async (req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, email, username, password, isMerchant } = req.body;
-    const user = await createUserService(name, email, username, password, isMerchant);
-    if (!user) {
+    const { name, email, username, password, role } = req.body;
+    const user = await createUserService(name, email, username, password, role);
+    if (!user || user == null) {
       return res.status(409).json({
         status: 409,
         message: "User already exists",
       });
     }
-    res.status(201).json({
+    return res.status(201).json({
       status: 201,
       message: "User successfully created.",
+      user,
     });
   } catch (err: any) {
     if (err.name === "UnauthorizedError" && err.message === "User already exists") {
       return res.status(409).json({ error: "User already exists" });
     }
-    res.status(500).json({ error: err });
+    return res.status(500).json({ error: err });
   }
 };
 
@@ -116,6 +122,45 @@ export const updatePassword = async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({
       message: err.message,
+    });
+  }
+};
+
+export const tokenVerification = async (req: any, res: Response) => {
+  const foundToken: TokenAttributes = req.token;
+
+  try {
+    const tokenCreationTime = new Date(String(foundToken?.createdAt)).getTime();
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - tokenCreationTime;
+
+    if (timeDifference > 600000) {
+      await Token.destroy({ where: { userId: foundToken.userId } });
+      return res.status(401).json({
+        message: "Token expired",
+      });
+    }
+
+    const user: IUser | null = await User.findOne({ where: { id: foundToken.userId } });
+
+    if (user) {
+      const token = await generateToken(user);
+
+      await Token.destroy({ where: { userId: foundToken.userId } });
+
+      return res.status(200).json({
+        message: "Login successful",
+        token,
+        user,
+      });
+    } else {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
     });
   }
 };

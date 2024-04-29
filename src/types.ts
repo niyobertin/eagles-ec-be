@@ -4,10 +4,9 @@ export interface IUser {
   username: string;
   email: string;
   password: string;
-  twoFAEnabled: boolean;
-  isMerchant?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  role: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export enum SUBJECTS {

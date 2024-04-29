@@ -1,15 +1,7 @@
 import express from "express";
 import { serve, setup } from "swagger-ui-express";
 import { env } from "../utils/env";
-import { 
-  createUsers, 
-  getUsers,
-  loginAsUser,
-   userSchema,
-   loginSchema,
-   updatePasswordSchema,
-   passwordUpdate
-  } from "./users";
+import { createUsers, getUsers, loginAsUser, userSchema, loginSchema, updatePasswordSchema, passwordUpdate, verifyOTPToken } from "./users";
 
 const docRouter = express.Router();
 
@@ -52,15 +44,18 @@ const options = {
       post: loginAsUser,
     },
     "/api/v1/users/passwordupdate": {
-      put: passwordUpdate
-    }
+      put: passwordUpdate,
+    },
+    "/api/v1/users/2fa-verify": {
+      post: verifyOTPToken,
+    },
   },
 
   components: {
     schemas: {
       User: userSchema,
       Login: loginSchema,
-      updatePassword: updatePasswordSchema
+      updatePassword: updatePasswordSchema,
     },
     securitySchemes: {
       bearerAuth: {
@@ -71,9 +66,8 @@ const options = {
         name: "Authorization",
       },
     },
-  }
-
-}
+  },
+};
 
 docRouter.use("/", serve, setup(options));
 

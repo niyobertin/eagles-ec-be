@@ -149,3 +149,32 @@ export const passwordUpdate = {
     },
   },
 };
+export const verifyOTPToken = {
+  tags: ["Users"],
+  summary: "verify OTP token for seller during login process",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          properties: {
+            token: {
+              type: "number",
+            },
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Successfuly logged in ",
+    },
+    403: {
+      description: "forbidden token expired",
+    },
+    404: {
+      description: "Inavalid token or not found",
+    },
+  },
+};
