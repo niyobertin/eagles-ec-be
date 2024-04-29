@@ -6,8 +6,7 @@ export interface UserAttributes {
   name: string;
   username: string;
   email: string;
-  isMerchant?: boolean;
-  twoFAEnabled?: boolean;
+  role?: string[];
   password: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -18,8 +17,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   name!: string;
   username!: string;
   email!: string;
-  twoFAEnabled!: boolean;
-  isMerchant!: boolean;
+  role!: string[];
   password!: string;
   createdAt!: Date | undefined;
   updatedAt1: Date | undefined;
@@ -45,13 +43,9 @@ User.init(
       allowNull: false,
       type: DataTypes.STRING,
     },
-    isMerchant: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    twoFAEnabled: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    role: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: ["buyer"],
     },
     password: {
       allowNull: false,

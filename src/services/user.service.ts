@@ -20,29 +20,37 @@ export const loggedInUser = async (email: string) => {
     const user: any = await User.findOne({
       where: { email: email },
     });
-    if (!user) {
-      return false;
-    } else {
-      return user;
-    }
+    return user;
   } catch (err: any) {
     throw new Error(err.message);
   }
 };
-export const createUserService = async (name: string, email: string, username: string, password: string, isMerchant?: boolean): Promise<User | null> => {
+export const createUserService = async (name: string, email: string, username: string, password: string, role: string): Promise<User | null> => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     return null;
   }
   const hashPassword = await hashedPassword(password);
-  const user = await User.create({
-    name,
-    email,
-    username,
-    password: hashPassword,
-    isMerchant,
-  });
-  return user;
+  let user;
+
+  if (role !== "" || role !== null) {
+    user = await User.create({
+      name,
+      email,
+      username,
+      password: hashPassword,
+      role: [role],
+    });
+    return user;
+  } else {
+    user = await User.create({
+      name,
+      email,
+      username,
+      password: hashPassword,
+    });
+    return user;
+  }
 };
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
