@@ -84,8 +84,7 @@ export const createUserController = async (req: Request, res: Response) => {
     }
     return res.status(201).json({
       status: 201,
-      message: "User successfully created.",
-      user,
+      message: "User successfully created."
     });
   } catch (err: any) {
     if (err.name === "UnauthorizedError" && err.message === "User already exists") {
@@ -99,10 +98,7 @@ export const updatePassword = async (req: Request, res: Response) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
   try {
     // @ts-ignore
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const { user } = req;
     const isPasswordValid = await comparePasswords(oldPassword, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Old password is incorrect" });
@@ -117,8 +113,10 @@ export const updatePassword = async (req: Request, res: Response) => {
     }
 
     const password = await hashedPassword(newPassword);
-    await updateUserPassword(user, password);
-    return res.status(200).json({ message: "Password updated successfully" });
+    const update = await updateUserPassword(user, password);
+    if(update){
+      return res.status(200).json({ message: "Password updated successfully" });
+    }
   } catch (err: any) {
     return res.status(500).json({
       message: err.message,
