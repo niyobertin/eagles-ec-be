@@ -7,12 +7,13 @@ import { passwordUpdateSchema } from "../schemas/passwordUpdate";
 import { isTokenFound } from "../middlewares/isTokenFound";
 import { authenticateUser, callbackFn } from "../services/user.service";
 require("../auth/auth");
+import logInSchema from "../schemas/loginSchema";
 
 const userRoutes = Router();
 
 userRoutes.get("/", fetchAllUsers);
 userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword)
-userRoutes.post('/login',userLogin);
+userRoutes.post("/login", emailValidation,validateSchema(logInSchema),userLogin);
 userRoutes.post("/register", emailValidation, validateSchema(signUpSchema), createUserController);
 userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword);
 userRoutes.post("/2fa-verify", isTokenFound, tokenVerification);
