@@ -1,6 +1,16 @@
 import User from "../sequelize/models/users";
 import { hashedPassword } from "../utils/hashPassword";
+import passport from "passport";
 import { Op } from "sequelize";
+
+export const authenticateUser = passport.authenticate("google", {
+  scope: ["email", "profile"],
+});
+
+export const callbackFn = passport.authenticate("google", {
+  successRedirect: "/api/v1/users/auth/google/success",
+  failureRedirect: "/api/v1/users/auth/google/failure",
+});
 
 export const getAllUsers = async () => {
   try {

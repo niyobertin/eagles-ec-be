@@ -7,7 +7,7 @@ export interface UserAttributes {
   username: string;
   email: string;
   role?: string[];
-  password: string;
+  password: string | undefined;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -48,7 +48,7 @@ User.init(
       defaultValue: ["buyer"],
     },
     password: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING,
     },
     createdAt: {

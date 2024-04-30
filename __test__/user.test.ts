@@ -49,13 +49,17 @@ describe("Testing user Routes", () => {
   let token: any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
-      const response = await request(app).post("/api/v1/users/register").send(userData);
+      const response = await request(app)
+        .post("/api/v1/users/register")
+        .send(userData);
       expect(response.status).toBe(201);
     }, 20000);
 
     test("should return 409 when registering with an existing email", async () => {
       User.create(userData);
-      const response = await request(app).post("/api/v1/users/register").send(userData);
+      const response = await request(app)
+        .post("/api/v1/users/register")
+        .send(userData);
       expect(response.status).toBe(409);
     }, 20000);
 
@@ -65,7 +69,9 @@ describe("Testing user Routes", () => {
         name: "",
         username: "existinguser",
       };
-      const response = await request(app).post("/api/v1/users/register").send(userData);
+      const response = await request(app)
+        .post("/api/v1/users/register")
+        .send(userData);
 
       expect(response.status).toBe(400);
     }, 20000);
@@ -172,3 +178,25 @@ describe("Testing user Routes", () => {
     expect(response.status).toBe(400);
   });
 });
+
+describe("Testing user authentication", () => {
+  test("should return 200 when password is updated", async () => {
+    const response = await request(app)
+      .get("/login")
+      expect(response.status).toBe(200) 
+      expect(response.text).toBe('<a href="/api/v1/users/auth/google"> Click to  Login </a>')
+  });
+  test("should return a redirect to Google OAuth when accessing /auth/google", async () => {
+    const response = await request(app).get("/api/v1/users/auth/google");
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain("https://accounts.google.com/o/oauth2");
+  });
+
+  test("should handle Google OAuth callback and redirect user appropriately", async () => {
+    const callbackFnMock = jest.fn();
+  
+    const response = await request(app).get("/api/v1/users/auth/google/callback");
+    expect(response.status).toBe(302); 
+  });
+  
+})

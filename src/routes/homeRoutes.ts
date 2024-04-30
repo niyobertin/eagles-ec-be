@@ -15,5 +15,8 @@ homeRoute.get("/", (req: Request, res: Response) => {
     });
   }
 });
+homeRoute.get("/login", (req: Request, res: Response) => {
+  res.send('<a href="/api/v1/users/auth/google"> Click to  Login </a>')
+});
 
 export default homeRoute;

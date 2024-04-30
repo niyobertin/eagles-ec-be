@@ -10,4 +10,7 @@ export const env = {
   smtp_port: process.env.SMTP_PORT,
   smtp_user: process.env.SMTP_USER as string,
   smtp_password: process.env.SMTP_PASS as string,
+  clientId: process.env.GOOGLE_CLIENT_ID as string,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
 };
