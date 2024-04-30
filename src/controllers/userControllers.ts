@@ -189,8 +189,7 @@ export const handleSuccess = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       token: token,
-      message: 'success',
-      data: foundUser,
+      message: 'success'
     });
   } catch (error: any) {
     return res.status(500).json({
