@@ -4,8 +4,7 @@ import { generateToken } from "../utils/jsonwebtoken";
 import * as mailService from "../services/mail.service";
 import { IUser, STATUS, SUBJECTS } from "../types";
 import { comparePasswords } from "../utils/comparePassword";
-import { loggedInUser} from "../services/user.service";
-import { createUserService, getUserByEmail, updateUserPassword } from "../services/user.service";
+import { createUserService, getUserByEmail, updateUserPassword,loggedInUser } from "../services/user.service";
 import { hashedPassword } from "../utils/hashPassword";
 import Token, { TokenAttributes } from "../sequelize/models/Token";
 import User from "../sequelize/models/users";
@@ -52,11 +51,6 @@ export const userLogin = async (req: Request, res: Response) => {
         message: " User email or password is incorrect!",
       });
     } else {
-      res.status(200).json({
-        status: 200,
-        message: "Logged in",
-        token: accessToken,
-      });
       if (user.role.includes("seller")) {
         const token = Math.floor(Math.random() * 90000 + 10000);
         //@ts-ignore
@@ -84,7 +78,7 @@ export const createUserController = async (req: Request, res: Response) => {
     if (!user || user == null) {
       return res.status(409).json({
         status: 409,
-        message: "Username or email already exists",
+        message: "User already exists",
       });
     }
     return res.status(201).json({
@@ -103,31 +97,31 @@ export const updatePassword = async (req: Request, res: Response) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
   try {
     // @ts-ignore
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    const { user } = req;
+    // @ts-ignore
     const isPasswordValid = await comparePasswords(oldPassword, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Old password is incorrect' });
-    }
-  
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: 'New password and confirm password do not match' });
+      return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    if(await comparePasswords(newPassword, user.password)){
-      return res.status(400).json({ message: 'New password is similar to the old one. Please use a new password'})
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New password and confirm password do not match" });
+    }
+    // @ts-ignore
+    if (await comparePasswords(newPassword, user.password)) {
+      return res.status(400).json({ message: "New password is similar to the old one. Please use a new password" });
     }
 
     const password = await hashedPassword(newPassword);
-    await updateUserPassword(user, password)
-    return res.status(200).json({ message: 'Password updated successfully' });
-
-  } catch(err: any){
+    // @ts-ignore
+    const update = await updateUserPassword(user, password);
+    if(update){
+      return res.status(200).json({ message: "Password updated successfully" });
+    }
+  } catch (err: any) {
     return res.status(500).json({
-      message: err.message
-    })
+      message: err.message,
+    });
   }
 };
 
@@ -165,6 +159,54 @@ export const tokenVerification = async (req: any, res: Response) => {
     }
   } catch (error: any) {
     return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const handleSuccess = async (req: Request, res: Response) => {
+  // @ts-ignore
+  const user: UserProfile = req.user;
+
+  try {
+    let token;
+    let foundUser: any = await User.findOne({
+      where: { email: user.emails[0].value }
+    });
+
+    if (!foundUser) {
+      const newUser:IUser = await User.create({
+        name: user.displayName,
+        email: user.emails[0].value,
+        username: user.name.familyName,
+        // @ts-ignore
+        password: null,
+      });
+      token = await generateToken(newUser);
+      foundUser = newUser;
+    } else {
+      token = await generateToken(foundUser);
+    }
+
+    return res.status(200).json({
+      token: token,
+      message: 'success',
+      data: foundUser,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+export const handleFailure = async (req: Request, res: Response) => {
+  try {
+    res.status(401).json({
+      message: "unauthorized",
+    });
+  } catch (error: any) {
+    res.status(500).json({
       message: error.message,
     });
   }

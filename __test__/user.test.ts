@@ -14,9 +14,9 @@ const userData: any = {
 };
 
 const dummySeller = {
-  name: "dummyseller",
-  username: "username",
-  email: "srukundo02@gmail.com",
+  name: "dummy1234",
+  username: "username1234",
+  email: "soleilcyber00@gmail.com",
   password: "1234567890",
   role: "seller",
 };
@@ -34,8 +34,9 @@ describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
       await connect();
-      await User.destroy({ truncate: true });
+      const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
     } catch (error) {
+      throw error;
       sequelize.close();
     }
   }, 40000);
@@ -43,7 +44,8 @@ describe("Testing user Routes", () => {
   afterAll(async () => {
     await User.destroy({ truncate: true });
     await sequelize.close();
-  });
+  }, 20000);
+
   let token: any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
@@ -82,19 +84,18 @@ describe("Testing user Routes", () => {
     expect(spy).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   }, 20000);
+
   test("Should return status 401 to indicate Unauthorized user", async () => {
     const loggedInUser = {
       email: userData.email,
-      password: "test",
+      password: "test123456",
     };
     const spyonOne = jest.spyOn(User, "findOne").mockResolvedValueOnce({
       //@ts-ignore
       email: userData.email,
       password: loginData.password,
     });
-    const response = await request(app)
-      .post("/api/v1/users/login")
-      .send(loggedInUser);
+    const response = await request(app).post("/api/v1/users/login").send(loggedInUser);
     expect(response.body.status).toBe(401);
     spyonOne.mockRestore();
   }, 20000);
@@ -133,13 +134,11 @@ describe("Testing user Routes", () => {
   });
 
   test("should return 401 when updating password without authorization", async () => {
-    const response = await request(app)
-      .put("/api/v1/users/passwordupdate")
-      .send({
-        oldPassword: userData.password,
-        newPassword: userTestData.newPassword,
-        confirmPassword: userTestData.confirmPassword,
-      });
+    const response = await request(app).put("/api/v1/users/passwordupdate").send({
+      oldPassword: userData.password,
+      newPassword: userTestData.newPassword,
+      confirmPassword: userTestData.confirmPassword,
+    });
     expect(response.status).toBe(401);
   });
 
@@ -173,9 +172,31 @@ describe("Testing user Routes", () => {
       .send({
         oldPassword: userTestData.wrongPassword,
         newPassword: userTestData.newPassword,
-        confirmPassword:userTestData.wrongPassword,
+        confirmPassword: userTestData.wrongPassword,
       })
       .set("Authorization", "Bearer " + token);
     expect(response.status).toBe(400);
   });
 });
+
+describe("Testing user authentication", () => {
+  test("should return 200 when password is updated", async () => {
+    const response = await request(app)
+      .get("/login")
+      expect(response.status).toBe(200) 
+      expect(response.text).toBe('<a href="/api/v1/users/auth/google"> Click to  Login </a>')
+  });
+  test("should return a redirect to Google OAuth when accessing /auth/google", async () => {
+    const response = await request(app).get("/api/v1/users/auth/google");
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain("https://accounts.google.com/o/oauth2");
+  });
+
+  test("should handle Google OAuth callback and redirect user appropriately", async () => {
+    const callbackFnMock = jest.fn();
+  
+    const response = await request(app).get("/api/v1/users/auth/google/callback");
+    expect(response.status).toBe(302); 
+  });
+  
+})
