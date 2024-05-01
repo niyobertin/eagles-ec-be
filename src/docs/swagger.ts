@@ -1,7 +1,20 @@
 import express from "express";
 import { serve, setup } from "swagger-ui-express";
 import { env } from "../utils/env";
-import { createUsers, getUsers, loginAsUser, userSchema, loginSchema, updatePasswordSchema, passwordUpdate, verifyOTPToken } from "./users";
+import { 
+  createUsers, 
+  getUsers,
+  loginAsUser,
+   userSchema,
+   loginSchema,
+   updatePasswordSchema,
+   passwordUpdate,
+   getProfileUser,
+   profileSchema,
+   updateProfile,
+   verifyOTPToken
+   
+  } from "./users";
 
 const docRouter = express.Router();
 
@@ -16,36 +29,35 @@ const options = {
   servers: [
     {
       url: `http://localhost:${env.port}`,
-      description: "Development server",
-    },
-    {
-      url: "https://eagles-ec-be-development.onrender.com/",
-      description: "Production server",
-    },
-  ],
+      description: 'Development server',
+    }, {
+        url: 'https://eagles-ec-be-development.onrender.com/',
+        description: 'Production server',
+    }],
 
-  basePath: "/",
+    basePath: "/",
 
-  tags: [
-    {
-      name: "Users",
-      description: "Endpoints related to users",
-    },
-  ],
+    tags: [
+        { name: "Users", description: "Endpoints related to users" },
+    ],
 
-  paths: {
-    "/api/v1/users": {
-      get: getUsers,
-    },
-    "/api/v1/users/register": {
-      post: createUsers,
-    },
-    "/api/v1/users/login": {
-      post: loginAsUser,
+    paths: {
+        "/api/v1/users": {
+            get: getUsers
+        },
+        "/api/v1/users/register": {
+          post: createUsers
+      },
+      "/api/v1/users/login": {
+        post: loginAsUser
     },
     "/api/v1/users/passwordupdate": {
       put: passwordUpdate,
     },
+  "/api/v1/users/profile": {
+    get: getProfileUser,
+    patch: updateProfile
+  },
     "/api/v1/users/2fa-verify": {
       post: verifyOTPToken,
     },
@@ -56,6 +68,7 @@ const options = {
       User: userSchema,
       Login: loginSchema,
       updatePassword: updatePasswordSchema,
+      Profile: profileSchema
     },
     securitySchemes: {
       bearerAuth: {
@@ -68,6 +81,7 @@ const options = {
     },
   },
 };
+     
 
 docRouter.use("/", serve, setup(options));
 

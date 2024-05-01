@@ -10,6 +10,8 @@ import Token, { TokenAttributes } from "../sequelize/models/Token";
 import User from "../sequelize/models/users";
 import { verifyOtpTemplate } from "../email-templates/verifyotp";
 
+import { getProfileServices, updateProfileServices } from "../services/user.service";
+import uploadFile from "../utils/handleUpload";
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
@@ -72,6 +74,8 @@ export const userLogin = async (req: Request, res: Response) => {
 };
 
 export const createUserController = async (req: Request, res: Response) => {
+  const { name, email, username, password, role } = req.body;
+
   try {
     const { name, email, username, password, role } = req.body;
     const user = await createUserService(name, email, username, password, role);
@@ -92,6 +96,7 @@ export const createUserController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: err });
   }
 };
+
 
 export const updatePassword = async (req: Request, res: Response) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -124,6 +129,7 @@ export const updatePassword = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const tokenVerification = async (req: any, res: Response) => {
   const foundToken: TokenAttributes = req.token;
@@ -210,3 +216,59 @@ export const handleFailure = async (req: Request, res: Response) => {
     });
   }
 };
+
+ 
+
+export const getProfileController = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const profile = await getProfileServices(userId);
+
+    if (!profile) {
+      res.status(404).json({ status: 404, message: "profile not found!" });
+    } else {
+      const { dataValues } = profile;
+      const { id, userId, email, ...filteredProfile } = dataValues;
+      res.status(200).json(filteredProfile);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateProfileController = async (req: Request, res: Response) => {
+  try{  
+       const userId =  (req as any).user.id;
+       const profileData = req.body; 
+       const file = req.file
+       let profileImage;
+
+       if (file) {
+          profileImage = await uploadFile(file);
+      }
+      
+      else if (Object.keys(profileData).length === 0) {
+           return res.status(400).json({
+               status: 400,
+               message: "Cannot update with empty profile data"
+      });
+       }     
+       else {
+        profileImage = "";
+     } 
+       const updatedProfile = await updateProfileServices(
+        userId,  
+        { ...profileData, profileImage }
+       );
+       res.status(200).json({
+           status: 200,
+           message: "You updated your profile sucessfully!",
+           updatedProfile
+       });
+       
+   }
+
+   catch(error) {    
+       res.status(500).json({ error: 'Internal server error' });
+   }
+}

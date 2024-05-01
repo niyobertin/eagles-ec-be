@@ -37,9 +37,19 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.addColumn('profiles', 'userId', {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.describeTable("users");
+    await queryInterface.removeColumn('profiles', 'userId');
+    await queryInterface.dropTable("users");
   },
 };

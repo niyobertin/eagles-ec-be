@@ -1,3 +1,6 @@
+import { response } from "express"
+import { format } from "path"
+
 export const userSchema = {
   type: "object",
   properties: {
@@ -7,6 +10,18 @@ export const userSchema = {
     username: {
       type: "string",
     },
+    email: {
+      type: "string",
+    },
+    password: {
+      type: "string",
+    },
+}
+}
+
+export const loginSchema ={
+  type: "object",
+  properties :{
     email: {
       type: "string",
       format: "email",
@@ -32,37 +47,70 @@ export const updatePasswordSchema = {
   },
 };
 
-export const loginSchema = {
-  properties: {
-    email: {
-      type: "string",
-      format: "email",
+
+export const profileSchema = {
+  type: "object",
+  properties :{
+    profileImage:{
+     type: "string",
+     format: "binary"
     },
-    password: {
+    fullName: {
       type: "string",
     },
+    gender: {
+      type: "string",
+    },
+    birthdate: {
+      type: "string",
+    },
+    preferredLanguage: {
+      type: "string",
+    },
+    preferredCurrency: {
+      type: "string",
+    },
+    street: {
+      type: "string",
+    },
+    city: {
+      type: "string",
+    },
+    state: {
+      type: "string",
+    },
+    postalCode: {
+      type: "string",
+    },
+    country: {
+      type: "string",
+    },
+
   },
-};
+}
 
 export const getUsers = {
-  tags: ["Users"],
-  summary: "Get all users",
-  responses: {
-    200: {
-      description: "OK",
-      content: {
-        "application/json": {
-          schema: {
-            type: "array",
-            items: {
-              $ref: "#/components/schemas/User",
+    tags: ["Users"],
+    summary: "Get all users",
+    responses: {
+      200: {
+        description: "OK",
+        content: {
+          "application/json": {
+            schema: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/User",
+              },
             },
           },
         },
       },
     },
-  },
-};
+    password: {
+      type: "string",
+    },
+  }
 
 export const createUsers = {
   tags: ["Users"],
@@ -85,14 +133,32 @@ export const createUsers = {
           schema: {
             $ref: "#/components/schemas/User",
           },
+       },
+     }
+    }
+    }
+  }
+    
+    export const  getProfileUser = {
+      tags: ["Users"],
+      security: [{ bearerAuth: [] }],
+      summary: "Get a profile",
+      responses: {
+        200: {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: {
+                type: "array",
+                items: {
+                  $ref: "#/components/schemas/Profile",
+                },
+              },
+            },
+          },
         },
       },
-    },
-    400: {
-      description: "Bad request",
-    },
-  },
-};
+    }
 
 export const loginAsUser = {
   tags: ["Users"],
@@ -125,6 +191,37 @@ export const loginAsUser = {
     },
   },
 };
+    export const updateProfile = {
+      tags: ["Users"],
+      security: [{bearerAuth: []}],
+      summary: "Update user profile",
+      requestBody: {
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              $ref: "#/components/schemas/Profile",
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: "Updated",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/Profile",
+              },
+            },
+          },
+        },
+        400: {
+          description: "Bad request",
+        },
+      },
+    }
+  
 
 export const passwordUpdate = {
   tags: ["Users"],
