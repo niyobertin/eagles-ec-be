@@ -23,3 +23,26 @@ export enum STATUS {
   SUCCESS = "Success",
   FAILED = "Failed",
 }
+
+export interface ProductType{
+  id?:number,
+  name:string,
+  images:string[],
+  stockQuantity:number,
+  price:number,
+  expiryDate:Date,
+  discount:number,
+  categoryID:number,
+  userId:number,
+  createdAt:Date,
+  updatedAt:Date 
+}
+
+export interface CategoryType{
+  id?:number,
+  name:string,
+  description:string,
+  image:string,
+  createdAt:Date,
+  updatedAt:Date
+  }
