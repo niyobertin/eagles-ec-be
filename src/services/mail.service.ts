@@ -16,7 +16,6 @@ export const sendEmailService = async (user: IUser, subject: string, template: a
 
     const info = await transporter.sendMail(mailOptions);
     //@ts-ignore
-    console.log(info.response);
   } catch (error: any) {
     throw new Error(error.message);
   }

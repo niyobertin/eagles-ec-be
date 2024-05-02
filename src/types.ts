@@ -1,10 +1,12 @@
+import { IRole } from "./sequelize/models/roles";
 export interface IUser {
   id?: number;
   name: string;
   username: string;
   email: string;
   password: string;
-  role: string[];
+  roleId?: number;
+  userRole?:IRole;
   createdAt?: Date;
   updatedAt?: Date;
 }

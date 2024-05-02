@@ -14,7 +14,7 @@
     "seed": "npx sequelize-cli db:seed:all",
     "undo:migrate" : "npx sequelize-cli db:migrate:undo:all",
     "lint:fix": "npx eslint --fix .",
-    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --coverage",
+    "test": "cross-env NODE_ENV=test npm run migrate && jest --detectOpenHandles --coverage",
     "prepare": "husky",
     "prettier": "prettier . --write"
   },
@@ -100,3 +100,4 @@
     "swagger-ui-express": "^5.0.0"
   }
 }
+

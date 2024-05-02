@@ -37,14 +37,17 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
-    await queryInterface.addColumn('profiles', 'userId', {
+
+    await queryInterface.addColumn('users', 'roleId', {
       type: Sequelize.INTEGER,
+      defaultValue: 1,
       references: {
-        model: 'users',
+        model: 'Roles',
         key: 'id'
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
+    
     });
   },
 

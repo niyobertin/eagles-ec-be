@@ -12,9 +12,16 @@ import {
    getProfileUser,
    profileSchema,
    updateProfile,
-   verifyOTPToken
-   
+   verifyOTPToken,
+   updateUserRole
   } from "./users";
+  import {
+    RoleSchema,
+    getRoles,
+    createRole,
+    updateRole,
+    deleteRole
+  } from "./roledoc";
 
 const docRouter = express.Router();
 
@@ -39,6 +46,10 @@ const options = {
 
     tags: [
         { name: "Users", description: "Endpoints related to users" },
+        {
+          name: "Roles",
+          description: "Endpoints related to roles"
+        }
     ],
 
     paths: {
@@ -61,10 +72,22 @@ const options = {
     "/api/v1/users/2fa-verify": {
       post: verifyOTPToken,
     },
+    "/api/v1/roles": {
+      get: getRoles,
+      post: createRole,
+    },
+    "/api/v1/roles/{id}": {
+      patch: updateRole,
+      delete: deleteRole,
+    },
+    "/api/v1/users/{id}/role":{
+      patch: updateUserRole
+    }
   },
 
   components: {
     schemas: {
+      Role: RoleSchema,
       User: userSchema,
       Login: loginSchema,
       updatePassword: updatePasswordSchema,
