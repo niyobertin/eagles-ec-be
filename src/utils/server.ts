@@ -5,6 +5,7 @@ import homeRoute from "../routes/homeRoutes";
 import docRouter from "../docs/swagger";
 import passport from "passport";
 import session from "express-session";
+import RoleRouter from "../routes/roleRoutes";
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use(
 app.use("/", homeRoute);
 app.use("/api/v1", appROutes);
 app.use("/docs", docRouter);
+app.use("/api/v1/roles", RoleRouter);
 
 export default app;

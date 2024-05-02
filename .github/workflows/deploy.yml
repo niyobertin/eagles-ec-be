@@ -32,6 +32,7 @@ jobs:
 
       - name: Running test
         env:
+          IS_REMOTE: true
           DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
           TEST_DB: ${{ secrets.TEST_DB }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}

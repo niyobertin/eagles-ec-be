@@ -12,6 +12,7 @@ import { verifyOtpTemplate } from "../email-templates/verifyotp";
 
 import { getProfileServices, updateProfileServices } from "../services/user.service";
 import uploadFile from "../utils/handleUpload";
+import { updateUserRoleService } from "../services/user.service";
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
@@ -53,7 +54,8 @@ export const userLogin = async (req: Request, res: Response) => {
         message: " User email or password is incorrect!",
       });
     } else {
-      if (user.role.includes("seller")) {
+      // @ts-ignore
+      if (user.userRole.name === "seller") {  
         const token = Math.floor(Math.random() * 90000 + 10000);
         //@ts-ignore
         await Token.create({ token: token, userId: user.id });
@@ -63,9 +65,18 @@ export const userLogin = async (req: Request, res: Response) => {
           message: "OTP verification code has been sent ,please use it to verify that it was you",
         });
       } else {
+        const userInfo = {
+          
+          id: user.id,
+          email: user.email,
+          roleId: user.userRole?.id,
+          roleName: user.userRole!.name
+
+        }
         return res.status(200).json({
           status: 200,
           message: "Logged in",
+          userInfo: userInfo,
           token: accessToken,
         });
       }
@@ -77,8 +88,8 @@ export const createUserController = async (req: Request, res: Response) => {
   const { name, email, username, password, role } = req.body;
 
   try {
-    const { name, email, username, password, role } = req.body;
-    const user = await createUserService(name, email, username, password, role);
+    const { name, email, username, password } = req.body;
+    const user = await createUserService(name, email, username, password);
     if (!user || user == null) {
       return res.status(409).json({
         status: 409,
@@ -272,3 +283,20 @@ export const updateProfileController = async (req: Request, res: Response) => {
        res.status(500).json({ error: 'Internal server error' });
    }
 }
+
+export const updateUserRole = async (req: Request, res: Response) => {
+  const { roleId } = req.body;
+  const userId = parseInt(req.params.id);
+  
+  try {
+    
+    const userToUpdate = await updateUserRoleService(userId, roleId);
+    
+    res.status(200).json({
+      message: 'User role updated successfully',
+    });   
+  } 
+  catch (error: any) {
+    res.status(500).json({ message: 'Role or User Not Found' });
+  }
+};

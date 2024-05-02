@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController } from "../controllers/userControllers";
-import { emailValidation, validateSchema } from "../middleware/validator";
+import { emailValidation, validateSchema } from "../middlewares/validator";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { passwordUpdateSchema } from "../schemas/passwordUpdate";
 import { isTokenFound } from "../middlewares/isTokenFound";
@@ -8,9 +8,14 @@ import { authenticateUser, callbackFn } from "../services/user.service";
 require("../auth/auth");
 import logInSchema from "../schemas/loginSchema";
 import { profileSchemas, signUpSchema } from "../schemas/signUpSchema";
-import upload from "../middleware/multer";
-import isUploadedFileImage from "../middleware/isImage";
+import upload from "../middlewares/multer";
+import isUploadedFileImage from "../middlewares/isImage";
 import bodyParser from "body-parser";
+import { isAdmin } from "../middlewares/isAdmin";
+import { roleUpdateSchema } from "../schemas/userRoleUpdateSchema";
+import { updateUserRole } from "../controllers/userControllers";
+import { roleExist } from "../middlewares/roleExist";
+import { userExist } from "../middlewares/userExist";
  
 
 
@@ -33,6 +38,8 @@ userRoutes.patch('/profile',
  isUploadedFileImage,
  updateProfileController
 )
+
+userRoutes.patch("/:id/role",isLoggedIn, isAdmin, validateSchema(roleUpdateSchema), userExist, roleExist, updateUserRole)
 
 
 userRoutes.get("/auth/google", authenticateUser);

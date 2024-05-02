@@ -1,14 +1,15 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/dbConnection';
 import Profile from './profiles';
+import {Role} from './roles'; 
 
 export interface UserAttributes {
   id?: number;
   name: string;
   username: string;
   email: string;
-  role?: string[];
   password: string | undefined;
+  roleId: number | undefined;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -18,8 +19,8 @@ class User extends Model<UserAttributes> implements UserAttributes {
   name!: string;
   username!: string;
   email!: string;
-  role!: string[];
   password!: string;
+  roleId!: number | undefined;
   createdAt!: Date | undefined;
   updatedAt!: Date | undefined;
 }
@@ -44,13 +45,18 @@ User.init(
       allowNull: false,
       type: DataTypes.STRING,
     },
-    role: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: ["buyer"],
-    },
     password: {
       allowNull: true,
       type: DataTypes.STRING,
+    },
+    roleId: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      defaultValue: 1,
+      references:{
+        model: 'Roles',
+        key: 'id'
+      }
     },
     createdAt: {
       allowNull: false,
@@ -65,6 +71,17 @@ User.init(
     sequelize,
     modelName: 'users',
   });
+  // associations with users table
+  
+  User.belongsTo(Role, {
+    foreignKey: 'roleId', 
+    as: 'userRole'
+  })
+  Role.hasMany(User, {
+    foreignKey: 'roleId', 
+    as: 'users'
+  })
+
   
   User.hasOne(Profile, {
     foreignKey: 'userId',

@@ -37,7 +37,7 @@ Token.init(
   },
   {
     sequelize,
-    modelName: "Token",
+    tableName: "tokens",
   },
 );
 

@@ -7,6 +7,10 @@ import * as mailServices from "../src/services/mail.service";
 import sequelize, { connect } from "../src/config/dbConnection";
 // import * as twoFAService from "../src/utils/2fa";
 import { profile } from "console";
+import bcrypt from "bcrypt";
+import { roleService } from "../src/services/role.service";
+import { Role } from "../src/sequelize/models/roles";
+import exp from "constants";
 
 const userData: any = {
   name: "yvanna5",
@@ -15,12 +19,12 @@ const userData: any = {
   password: "test12345",
 };
 
+
 const dummySeller = {
   name: "dummy1234",
   username: "username1234",
   email: "soleilcyber00@gmail.com",
   password: "1234567890",
-  role: "seller",
 };
 const userTestData = {
   newPassword: "Test@123",
@@ -55,6 +59,25 @@ describe("Testing user Routes", () => {
     try {
       await connect();
       await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');
+      const testAdmin = {
+        name: "admin",
+        username: "admin",
+        email: "admin1@example.com",
+        password: await bcrypt.hash("password", 10),
+        roleId: 3
+      }
+   
+      await Role.destroy({ where: {}});
+      const resetId = await sequelize.query('ALTER SEQUENCE "Roles_id_seq" RESTART WITH 1');
+      
+      await Role.bulkCreate([
+        { name: "buyer" },
+        { name: "seller" },
+        { name: "admin" },
+      ])
+     
+      await User.create(testAdmin);
+  
       const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
     } catch (error) {
       console.error('Error connecting to the database:', error);
@@ -63,13 +86,16 @@ describe("Testing user Routes", () => {
 
 
   let token:any;
+  let adminToken:any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
       const response = await request(app)
         .post("/api/v1/users/register")
         .send(userData);
+        
       expect(response.status).toBe(201);
     }, 20000);
+
 
     test("should return 409 when registering with an existing email", async () => {
       User.create(userData);
@@ -165,6 +191,32 @@ describe("Testing user Routes", () => {
     expect(response.body.status).toBe(401);
     spyonOne.mockRestore();
   }, 20000);
+
+  test("should login an Admin", async () =>{
+    const response = await request(app).post("/api/v1/users/login").send({
+      email: "admin1@example.com",
+        password: "password"
+  })
+  adminToken = response.body.token;
+});
+  
+  test("should update dummyseller's role to seller", async () => {
+    const logDummySeller = await request(app).post("/api/v1/users/login").send({
+      email: dummySeller.email,
+      password: dummySeller.password,
+    });
+    expect(logDummySeller.status).toBe(200);
+    const dummySellerId = logDummySeller.body.userInfo.id;
+
+    const response = await request(app)
+      .patch(`/api/v1/users/${dummySellerId}/role`)
+      .send({
+        roleId: 2,
+      })
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(200);
+    
+  });
 
   test("Should send otp verification code", async () => {
     const spy = jest.spyOn(mailServices, "sendEmailService");
@@ -264,8 +316,109 @@ describe("Testing user authentication", () => {
     const response = await request(app).get("/api/v1/users/auth/google/callback");
     expect(response.status).toBe(302); 
   });
+
+
   
 })
+
+describe("Admin should be able to CRUD roles", () => {
+  let testRoleName = "testrole";
+  let newRoleId: any;
+  test("should return 201 when a new role is created", async () => {
+    const response = await request(app)
+      .post("/api/v1/roles")
+      .send({
+        name: testRoleName,
+      })
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(201);
+    newRoleId = response.body.role.id;
+   
+  });
+
+  test("should return 400 when a role with the same name is created", async () => {
+    const response = await request(app)
+      .post("/api/v1/roles")
+      .send({
+        name: testRoleName,
+      })
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(400);
+  });
+
+  test("should return 404 when deleting a role which doesn't exist", async () => {
+    const response = await request(app)
+      .delete("/api/v1/roles/1000")
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(404);
+  })
+
+  test("should return 200 when all roles are fetched", async () => {
+    const response = await request(app)
+      .get("/api/v1/roles")
+    expect(response.status).toBe(200);
+  });
+
+  test("should return 200 when a role is updated", async () => {
+    const response = await request(app)
+      .patch("/api/v1/roles/" + newRoleId)
+      .send({
+        name: "testRoled",
+      })
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(200);
+  });
+  test("should return 400 role already exists when a role is updated with an existing name", async () => {
+    const response = await request(app)
+      .patch("/api/v1/roles/" + newRoleId)
+      .send({
+        name: "buyer"
+      })
+      .set("Authorization", "Bearer " + adminToken);
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Role already exists')
+  });
+
+  test("should return 401 Unauthorized when trying to create or update role without Auth", async () =>{
+    const response = await request(app)
+      .patch("/api/v1/roles/" + newRoleId)
+      .send({
+        name: "testRoled",
+      })
+    expect(response.status).toBe(401);
+  })
+
+  test("should return 200 when a role is deleted", async () => {
+    const response = await request(app)
+      .delete("/api/v1/roles/" + newRoleId)
+      .set("Authorization", "Bearer " + adminToken);
+    expect(response.status).toBe(200);
+  });
+});
+
+test("should return 409 when updating a role for user who doesn't exist", async () => {
+
+  const response = await request(app)
+    .patch("/api/v1/users/1000/role")
+    .send({
+      roleId: 2,
+    })
+    .set("Authorization", "Bearer " + adminToken);
+   
+    
+  expect(response.status).toBe(409);
+});
+
+test("should return 409 when updating a role for a role that doesn't exist", async () => {
+  const response = await request(app)
+    .patch("/api/v1/users/1/role")
+    .send({
+      roleId: 1000,
+    })
+    .set("Authorization", "Bearer " + adminToken);
+  expect(response.status).toBe(409);
+});
+
 afterAll(async () => {
   try {
     await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');

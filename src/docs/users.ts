@@ -275,3 +275,47 @@ export const verifyOTPToken = {
     },
   },
 };
+
+export const updateUserRole ={
+  tags: ["Users"],
+  security: [{ bearerAuth: [] }],
+  summary: "Update user role",
+  parameters: [
+    {
+      name: "id",
+      in: "path",
+      required: true,
+      description: "User ID",
+      schema: {
+        type: "number",
+      },
+    },
+  ],
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            roleId: {
+              type: "number",
+            },
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "OK",
+    },
+    400: {
+      description: "Bad request",
+    },
+    404: {
+      description: "Not found",
+    },
+  },
+};
+
