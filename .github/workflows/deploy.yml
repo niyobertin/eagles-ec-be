@@ -42,6 +42,9 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+          CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+          CLOUD_KEY: ${{ secrets.CLOUD_KEY }}
+          CLOUD_SECRET: ${{ secrets.CLOUD_SECRET }}
 
         run: npm run test
 

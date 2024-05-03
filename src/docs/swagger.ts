@@ -22,6 +22,21 @@ import {
     updateRole,
     deleteRole
   } from "./roledoc";
+  import {
+    getProducts,
+    addProducts,
+    updateProducts,
+   getSingleProducts,
+   deleteProducts,
+   productSchema } from "./products"; 
+ import {
+    getCategories,
+    addCategories,
+    getSingleCategory,
+    updateCategories,
+    deleteCategories,
+    categorySchema
+  } from "./categories";
 
 const docRouter = express.Router();
 
@@ -49,7 +64,9 @@ const options = {
         {
           name: "Roles",
           description: "Endpoints related to roles"
-        }
+        },
+        { name: "Products", description: "Endpoints related to products" },
+        { name: "Categories", description: "Endpoints related categories" }
     ],
 
     paths: {
@@ -82,7 +99,25 @@ const options = {
     },
     "/api/v1/users/{id}/role":{
       patch: updateUserRole
-    }
+    },
+    "/api/v1/products":{
+     get:getProducts,
+     post:addProducts
+   },
+   "/api/v1/products/{id}":{
+    get:getSingleProducts,
+    patch:updateProducts,
+    delete:deleteProducts
+  },
+  "/api/v1/categories":{
+    get:getCategories,
+    post:addCategories
+  },
+  "/api/v1/categories/{id}":{
+    get:getSingleCategory,
+    patch:updateCategories,
+    delete:deleteCategories,
+  } 
   },
 
   components: {
@@ -91,7 +126,9 @@ const options = {
       User: userSchema,
       Login: loginSchema,
       updatePassword: updatePasswordSchema,
-      Profile: profileSchema
+      Profile: profileSchema,
+      Product:productSchema,
+      Category:categorySchema
     },
     securitySchemes: {
       bearerAuth: {
