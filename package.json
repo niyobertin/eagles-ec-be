@@ -12,7 +12,7 @@
     "migrate": "npx sequelize-cli db:migrate",
     "migrate:test": "npx sequelize-cli db:migrate --env test",
     "seed": "npx sequelize-cli db:seed:all",
-    "undo:migrate" : "npx sequelize-cli db:migrate:undo:all",
+    "undo:migrate": "npx sequelize-cli db:migrate:undo:all",
     "lint:fix": "npx eslint --fix .",
     "test": "cross-env NODE_ENV=test npm run migrate && jest --detectOpenHandles --coverage",
     "prepare": "husky",
@@ -86,6 +86,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "husky": "^9.0.11",
+    "ioredis": "^5.4.1",
     "joi": "^17.13.0",
     "jsonwebtoken": "^9.0.2",
     "lint-staged": "^15.2.2",
@@ -100,4 +101,3 @@
     "swagger-ui-express": "^5.0.0"
   }
 }
-

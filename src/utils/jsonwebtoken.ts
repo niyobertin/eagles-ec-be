@@ -19,14 +19,14 @@ export const decodeToken = async (token: string) => {
   return decoded;
 };
 
-export const generateMagicLinkToken = async (user: IUser) => {
-  const token = sign({ email: user.email }, `${env.jwt_secret}`, {
-    expiresIn: "5m",
+export const generateMagicLinkToken = async (otp: number, user: IUser) => {
+  const token = sign({ otp, userId: user.id }, `${env.jwt_secret}`, {
+    expiresIn: "10m",
   });
   return token;
 };
 
-export const verifyMagicLinkToken = async (token: string) => {
+export const decodeMagicLinkToken = async (token: string) => {
   try {
     const decoded = verify(token, `${env.jwt_secret}`);
     return decoded;
