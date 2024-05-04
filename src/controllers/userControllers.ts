@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
-import { generateToken } from "../utils/jsonwebtoken";
+import { decodeMagicLinkToken, generateMagicLinkToken, generateToken } from "../utils/jsonwebtoken";
 import * as mailService from "../services/mail.service";
 import { IUser, STATUS, SUBJECTS } from "../types";
 import { comparePasswords } from "../utils/comparePassword";
 import { createUserService, getUserByEmail, updateUserPassword,loggedInUser } from "../services/user.service";
 import { hashedPassword } from "../utils/hashPassword";
-import Token, { TokenAttributes } from "../sequelize/models/Token";
+import jwt from "jsonwebtoken"
 import User from "../sequelize/models/users";
 import { verifyOtpTemplate } from "../email-templates/verifyotp";
-
 import { getProfileServices, updateProfileServices } from "../services/user.service";
 import uploadFile from "../utils/handleUpload";
 import { updateUserRoleService } from "../services/user.service";
+import { generateRandomNumber } from "../utils/generateRandomNumber";
+import { env } from "../utils/env";
+
+
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
@@ -56,13 +59,15 @@ export const userLogin = async (req: Request, res: Response) => {
     } else {
       // @ts-ignore
       if (user.userRole.name === "seller") {  
-        const token = Math.floor(Math.random() * 90000 + 10000);
-        //@ts-ignore
-        await Token.create({ token: token, userId: user.id });
-        await mailService.sendEmailService(user, SUBJECTS.CONFIRM_2FA, verifyOtpTemplate(token), token);
+        const otp = generateRandomNumber();
+        const token = await generateMagicLinkToken(otp, user);
+        const link =
+          process.env.NODE_ENV !== "production"? `${env.local_url}/${token}`: `${env.remote_url}/${token}`;
+        await mailService.sendEmailService(user, SUBJECTS.VERIFY_LOGIN, verifyOtpTemplate(link,otp));
         return res.status(200).json({
           status: STATUS.PENDING,
           message: "OTP verification code has been sent ,please use it to verify that it was you",
+          token,
         });
       } else {
         const userInfo = {
@@ -142,43 +147,31 @@ export const updatePassword = async (req: Request, res: Response) => {
 };
 
 
-export const tokenVerification = async (req: any, res: Response) => {
-  const foundToken: TokenAttributes = req.token;
+export const tokenVerification = async (req: Request, res: Response) => {
+  const {token} = req.params;
 
   try {
-    const tokenCreationTime = new Date(String(foundToken?.createdAt)).getTime();
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - tokenCreationTime;
-
-    if (timeDifference > 600000) {
-      await Token.destroy({ where: { userId: foundToken.userId } });
-      return res.status(401).json({
-        message: "Token expired",
-      });
-    }
-
-    const user: IUser | null = await User.findOne({ where: { id: foundToken.userId } });
-
-    if (user) {
-      const token = await generateToken(user);
-
-      await Token.destroy({ where: { userId: foundToken.userId } });
-
+    const decoded = await decodeMagicLinkToken(token);
+    //@ts-ignore
+    const { otp, userId } = decoded;
+    if (otp) {
+      const user = await User.findOne({ where: { id: userId }, attributes: { exclude: ["password"] } });
+      //@ts-ignore
+      const accessToken = await generateToken(user);
       return res.status(200).json({
-        message: "Login successful",
-        token,
-        user,
+        message: "logged in successfuly",
+        token: accessToken,
       });
     } else {
-      return res.status(404).json({
-        message: "User not found",
+      return res.status(401).json({
+        message: "Token expired",
       });
     }
   } catch (error: any) {
     return res.status(500).json({
       message: error.message,
     });
-  }
+}
 };
 export const handleSuccess = async (req: Request, res: Response) => {
   // @ts-ignore
@@ -298,5 +291,46 @@ export const updateUserRole = async (req: Request, res: Response) => {
   } 
   catch (error: any) {
     res.status(500).json({ message: 'Role or User Not Found' });
+  }
+};
+
+
+export const otpVerification = async (req: Request, res: Response) => {
+  const { token } = req.query;
+  const {otp} = req.body
+
+  try {
+      //@ts-ignore
+      const { otp: initialOtp, userId } = await decodeMagicLinkToken(token as string)
+      if (!initialOtp) {
+          return res.status(403).json({
+              message: "Token expired"
+          });
+      }
+
+      if (otp === initialOtp) {
+          const user = await User.findOne({ where: { id: userId }, attributes: { exclude: ["password"] } });
+          //@ts-ignore
+          const accessToken = await generateToken(user);
+
+          return res.status(200).json({
+              message: "Logged in successfully",
+              token: accessToken
+          });
+      } else {
+          return res.status(401).json({
+            message: "Invalid OTP",
+          });
+      }
+  } catch (error:any) {
+      if (error instanceof jwt.TokenExpiredError) {
+          return res.status(403).json({
+              message: "JWT token expired"
+          });
+      } else {
+          return res.status(500).json({
+              message: error.message,
+          });
+      }
   }
 };

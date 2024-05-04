@@ -40,8 +40,8 @@ describe("Testing product Routes", () => {
       try {
         await connect();
         const testAdmin = {
-            name: "admin",
-            username: "admin",
+            name: "admin123",
+            username: "admin123",
             email: "admin1@example.com",
             password: await bcrypt.hash("password", 10),
             roleId: 3

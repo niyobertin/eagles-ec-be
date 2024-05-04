@@ -13,4 +13,6 @@ export const env = {
   clientId: process.env.GOOGLE_CLIENT_ID as string,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
   callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
+  remote_url: `${process.env.REMOTE_URL}/api/v1/users/2fa-verify`,
+  local_url: `${process.env.LOCAL_URL}:${process.env.PORT}/api/v1/users/2fa-verify`
 };

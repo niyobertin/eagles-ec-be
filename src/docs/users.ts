@@ -248,14 +248,25 @@ export const passwordUpdate = {
 };
 export const verifyOTPToken = {
   tags: ["Users"],
-  summary: "verify OTP token for seller during login process",
+  summary: "OTP verification",
+  parameters: [
+    {
+      name: "token",
+      in: "query",
+      required: true,
+      description: "jwt token",
+      schema: {
+        type: "string",
+      },
+    },
+  ],
   requestBody: {
     required: true,
     content: {
       "application/json": {
         schema: {
           properties: {
-            token: {
+            otp: {
               type: "number",
             },
           },

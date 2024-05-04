@@ -1,11 +1,8 @@
-import Token from "../sequelize/models/Token";
-import { IUser, SUBJECTS } from "../types";
+import { IUser } from "../types";
 import { env } from "../utils/env";
-import { generateMagicLinkToken } from "../utils/jsonwebtoken";
 import transporter from "../utils/transporter";
-import { verifyOtpTemplate } from "../email-templates/verifyotp";
 
-export const sendEmailService = async (user: IUser, subject: string, template: any, token: number) => {
+export const sendEmailService = async (user: IUser, subject: string, template: any) => {
   try {
     const mailOptions = {
       from: env.smtp_user,
