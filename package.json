@@ -39,6 +39,7 @@
   "author": "atlp",
   "license": "MIT",
   "devDependencies": {
+    "@babel/helper-compilation-targets": "^7.23.6",
     "@eslint/js": "^9.1.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",

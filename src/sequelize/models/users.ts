@@ -10,6 +10,7 @@ export interface UserAttributes {
   email: string;
   password: string | undefined;
   roleId: number | undefined;
+  isActive?:boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -20,6 +21,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   username!: string;
   email!: string;
   password!: string;
+  isActive: boolean | undefined;
   roleId!: number | undefined;
   createdAt!: Date | undefined;
   updatedAt!: Date | undefined;
@@ -57,6 +59,11 @@ User.init(
         model: 'Roles',
         key: 'id'
       }
+    },
+    isActive:{
+      type: DataTypes.BOOLEAN,
+      allowNull:false,
+      defaultValue:true
     },
     createdAt: {
       allowNull: false,

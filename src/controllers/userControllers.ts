@@ -188,8 +188,8 @@ export const handleSuccess = async (req: Request, res: Response) => {
         name: user.displayName,
         email: user.emails[0].value,
         username: user.name.familyName,
-        // @ts-ignore
-        password: null,
+        //@ts-ignore
+        password: null
       });
       token = await generateToken(newUser);
       foundUser = newUser;
@@ -204,8 +204,8 @@ export const handleSuccess = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       message: error.message,
-    });
-  }
+});
+}
 };
 
 
@@ -334,3 +334,9 @@ export const otpVerification = async (req: Request, res: Response) => {
       }
   }
 };
+
+export const changeUserAccountStatus = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const updateStatusResult = await userService.updateUserAccountStatus(userId);
+  return res.status(updateStatusResult.status).json(updateStatusResult);
+}
