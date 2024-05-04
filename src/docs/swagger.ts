@@ -38,6 +38,7 @@ import {
     deleteCategories,
     categorySchema
   } from "./categories";
+import { AddToWishes, deleteWish, getWishes, getWishesByProduct, wishSchema } from "./wishes";
 
 const docRouter = express.Router();
 
@@ -67,7 +68,8 @@ const options = {
           description: "Endpoints related to roles"
         },
         { name: "Products", description: "Endpoints related to products" },
-        { name: "Categories", description: "Endpoints related categories" }
+        { name: "Categories", description: "Endpoints related categories" },
+        { name: "Wishes", description: "Endpoints related to Wishes" }
     ],
 
     paths: {
@@ -121,7 +123,15 @@ const options = {
   }, 
     "/api/v1/users/{userId}/status": {
       patch: changeUserAccountStatus,
-    }
+    },
+  "/api/v1/wishes": {
+    post: AddToWishes,
+    get: getWishes
+  },
+  "/api/v1/wishes/{id}": {
+    get: getWishesByProduct,
+    delete: deleteWish
+  }
   },
 
   components: {
@@ -132,7 +142,8 @@ const options = {
       updatePassword: updatePasswordSchema,
       Profile: profileSchema,
       Product:productSchema,
-      Category:categorySchema
+      Category:categorySchema,
+      Wish: wishSchema
     },
     securitySchemes: {
       bearerAuth: {

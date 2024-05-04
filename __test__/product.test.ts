@@ -34,6 +34,13 @@ const product:any = {
     categoryID: 1,
   };
 
+  const dummyBuyer = {
+    name: "test user",
+    username: "testUser",
+    email: "soleil@soleil0w.com",
+    password: "soleil00",    
+  }
+
 
 describe("Testing product Routes", () => {
     beforeAll(async () => {
@@ -76,7 +83,23 @@ describe("Testing product Routes", () => {
         .send(userData);
       expect(response.status).toBe(201);
     }, 20000);
-    
+
+    test('should return 201 and register a dummy buyer user', async () => {
+      const response = await request(app)
+        .post("/api/v1/users/register")
+        .send(dummyBuyer);
+        expect(response.status).toBe(201);
+    })
+    let buyerToken: any;
+
+    test("should login an buyer", async () =>{
+      const response = await request(app).post("/api/v1/users/login").send({
+        email: "soleil@soleil0w.com",
+        password: "soleil00"
+    })
+    buyerToken = response.body.token;
+  });
+
     let token:any, adminToken:any;
     test('It should return status 401 for unthorized',async() =>{
         const response = await request(app)
@@ -227,6 +250,35 @@ test("should return all products in db --> given '/api/v1/products'", async () =
     expect(response.status).toBe(201);
 },40000);
 
+test('It should add a product to the user wishes', async () => {
+  const response = await request(app)
+  .post('/api/v1/wishes')
+  .send({ productId })
+  .set("Authorization", "Bearer " + buyerToken);
+  expect(response.status).toBe(201)
+}, 20000);
+
+test('It should return a list of user wishes', async () => {
+  const response = await request(app)
+  .get('/api/v1/wishes')
+  .set("Authorization", "Bearer " + buyerToken);
+  expect(response.status).toBe(200)
+});
+
+test('It should retrieve wishes on a single product', async () => {
+  const response = await request(app)
+  .get(`/api/v1/wishes/${productId}`)
+  .set("Authorization", "Bearer " + token);
+  expect(response.status).toBe(200)
+})
+
+test('It should remove a product from user wishlist', async () => {
+  const response = await request(app)
+  .delete(`/api/v1/wishes/${productId}`)
+  .set("Authorization", "Bearer " + buyerToken);
+  expect(response.status).toBe(200)
+})
+
   test('It should return status 200 for removed Product',async() =>{
     const response = await request(app)
     .delete(`/api/v1/products/${productId}`)
@@ -247,5 +299,6 @@ test('It should return status 200 for removed category',async() =>{
   .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(200);
 },20000);
+
 });
 

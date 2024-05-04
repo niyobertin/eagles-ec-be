@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/dbConnection';
 import Profile from './profiles';
 import {Role} from './roles'; 
+import Wishes from './wishes';
 
 export interface UserAttributes {
   id?: number;
@@ -99,6 +100,16 @@ User.init(
     foreignKey: 'userId',
     as: 'user'
   });
+
+  User.hasMany(Wishes, {
+    foreignKey: 'userId',
+    as: 'user'
+  });
+
+  Wishes.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+  })
 
 
 export default User;
