@@ -2,7 +2,7 @@ import { IUser } from "../types";
 import { env } from "../utils/env";
 import transporter from "../utils/transporter";
 
-export const sendEmailService = async (user: IUser, subject: string, template: any) => {
+export const sendEmailService = async (user: IUser, subject: string, template: any, token?: number) => {
   try {
     const mailOptions = {
       from: env.smtp_user,

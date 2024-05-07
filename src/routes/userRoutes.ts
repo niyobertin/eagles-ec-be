@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification } from "../controllers/userControllers";
+import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification, changeUserAccountStatus } from "../controllers/userControllers";
 import { emailValidation, validateSchema } from "../middlewares/validator";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { passwordUpdateSchema } from "../schemas/passwordUpdate";
@@ -15,6 +15,7 @@ import { roleUpdateSchema } from "../schemas/userRoleUpdateSchema";
 import { updateUserRole } from "../controllers/userControllers";
 import { roleExist } from "../middlewares/roleExist";
 import { userExist } from "../middlewares/userExist";
+import { isDisabled } from "../middlewares/isDisabled";
  
 
 
@@ -22,7 +23,7 @@ const userRoutes = Router();
 
 userRoutes.get("/", fetchAllUsers);
 userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword)
-userRoutes.post("/login", emailValidation,validateSchema(logInSchema),userLogin);
+userRoutes.post("/login", emailValidation,validateSchema(logInSchema),isDisabled,userLogin);
 userRoutes.post("/register", emailValidation, validateSchema(signUpSchema), createUserController);
 userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword);
 userRoutes.get("/2fa-verify/:token",tokenVerification);
@@ -40,12 +41,11 @@ userRoutes.patch('/profile',
 )
 
 userRoutes.patch("/:id/role",isLoggedIn, isAdmin, validateSchema(roleUpdateSchema), userExist, roleExist, updateUserRole)
-
+userRoutes.patch('/:userId/status',isLoggedIn, isAdmin, changeUserAccountStatus);
 
 userRoutes.get("/auth/google", authenticateUser);
 userRoutes.get("/auth/google/callback", callbackFn);
 userRoutes.get("/auth/google/success", handleSuccess);
 userRoutes.get("/auth/google/failure", handleFailure);
-
 
 export default userRoutes;

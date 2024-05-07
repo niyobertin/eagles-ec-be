@@ -13,7 +13,8 @@ import {
    profileSchema,
    updateProfile,
    verifyOTPToken,
-   updateUserRole
+   updateUserRole,
+   changeUserAccountStatus
   } from "./users";
   import {
     RoleSchema,
@@ -117,7 +118,10 @@ const options = {
     get:getSingleCategory,
     patch:updateCategories,
     delete:deleteCategories,
-  } 
+  }, 
+    "/api/v1/users/{userId}/status": {
+      patch: changeUserAccountStatus,
+    }
   },
 
   components: {

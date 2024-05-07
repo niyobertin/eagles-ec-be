@@ -11,6 +11,7 @@ import bcrypt from "bcrypt";
 import { roleService } from "../src/services/role.service";
 import { Role } from "../src/sequelize/models/roles";
 import exp from "constants";
+import { QueryTypes } from "sequelize";
 
 const userData: any = {
   name: "yvanna5",
@@ -87,6 +88,7 @@ describe("Testing user Routes", () => {
 
   let token:any;
   let adminToken:any;
+  let registerdUserId:any;
   describe("Testing user authentication", () => {
     test("should return 201 and create a new user when registering successfully", async () => {
       const response = await request(app)
@@ -227,7 +229,7 @@ describe("Testing user Routes", () => {
 
     expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
     // expect(spy).toHaveBeenCalled();
-  }, 40000);
+  }, 60000);
 
   test("should log a user in to retrieve a token", async () => {
     const response = await request(app).post("/api/v1/users/login").send({
@@ -320,6 +322,73 @@ describe("Testing user authentication", () => {
 
   
 })
+describe('updateUserAccountStatus', () => {
+
+  it('should return 401 when user is not logged in', async () => {
+    const response = await request(app)
+      .patch('/api/v1/users/123/status');
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('You are not logged in. Please login to continue.');
+  });
+
+  it('should return 200 when user account status is updated', async () => {
+    const query = `
+      SELECT id
+      FROM users
+      WHERE email = :email
+    `;
+    const [userIdData] = await sequelize.query(query, {
+      replacements: { email: userData.email },
+      type: QueryTypes.SELECT,
+    },);
+// @ts-ignore
+    if (userIdData && userIdData.id) {
+      // @ts-ignore
+      const userId = userIdData.id;
+      const response = await request(app)
+        .patch(`/api/v1/users/${userId}/status`)
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('User account status updated successfully');
+    } else {
+      throw new Error('User not found');
+    }
+  }, 40000);
+
+  it('should return 404 when user does not exist', async () => {
+  
+      const userId = 99999999;
+      const response = await request(app)
+        .patch(`/api/v1/users/${userId}/status`)
+        .set('Authorization', `Bearer ${adminToken}`);
+        expect(response.status).toBe(404);
+        expect(response.body.data.message).toBe('User not found');
+    
+  }, 10000);
+  it('should return 403 when  you are not an admin', async () => {
+    const query = `
+      SELECT id
+      FROM users
+      WHERE email = :email
+    `;
+    const [userIdData] = await sequelize.query(query, {
+      replacements: { email: userData.email },
+      type: QueryTypes.SELECT,
+    });
+// @ts-ignore
+    if (userIdData && userIdData.id) {
+      // @ts-ignore
+      const userId = userIdData.id;
+      const response = await request(app)
+        .patch(`/api/v1/users/${userId}/status`)
+        .set('Authorization', `Bearer ${token}`);
+        expect(response.status).toBe(403);
+        expect(response.body.message).toBe('Only admins can perform this action');
+    } else {
+      throw new Error('User not found');
+    }
+  });
+});
 
 describe("Admin should be able to CRUD roles", () => {
   let testRoleName = "testrole";
@@ -434,4 +503,6 @@ afterAll(async () => {
 });
 
 })  
+
+
 

@@ -1,10 +1,15 @@
 import User from "../sequelize/models/users";
 import { hashedPassword } from "../utils/hashPassword";
 import passport from "passport";
-import { Op } from "sequelize";
 import Profile, { ProfileAttributes } from "../sequelize/models/profiles";
 import { Role } from "../sequelize/models/roles";
 import { error } from "console";
+import { sendEmailService } from "./mail.service";
+import { Op, QueryTypes } from "sequelize";
+import userRoutes from "../routes/userRoutes";
+import sequelize from "../config/dbConnection";
+import { activationTemplate } from "../email-templates/activation";
+
 
 
 export const authenticateUser = passport.authenticate("google", {
@@ -19,7 +24,7 @@ export const callbackFn = passport.authenticate("google", {
 export const getAllUsers = async () => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'name', 'username', 'email', 'roleId', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'name', 'username', 'email', 'roleId', 'createdAt', 'updatedAt','isActive'],
     });
     if (users.length === 0) {
       console.log("no user");
@@ -51,7 +56,9 @@ export const createUserService = async (name: string, email: string, username: s
   let user;
 
  
-    user = await User.create({
+    user = await User.create(
+      //@ts-ignore
+      {
       name,
       email,
       username,
@@ -156,5 +163,39 @@ export const updateUserRoleService = async (userId: number, newRoleId: number): 
     throw new Error(`Error in service`);
   }
  
+};
+export const updateUserAccountStatus = async (userId:any) => {
+  try {
+    const existingInfo = await User.findByPk(userId)
+    if(!existingInfo){
+      return { status: 404, data: { message: 'User not found' } };
+    }
+    const updatedUser = await User.update({
+      isActive: !existingInfo.isActive
+    },
+    {
+      where:{
+      id:userId
+    }})
+    if(!updatedUser){
+      return {
+        status: 500,
+        message:"Internal server error"
+      }
+      
+    }
+    //@ts-ignore
+    const action = existingInfo.isActive ? 'disabled' : 'activated';
+    const subject = `Account Status ${action.charAt(0).toUpperCase() + action.slice(1)}`;
+    const msg = `Your account has been ${action}.`;
+    //@ts-ignore
+    await sendEmailService(existingInfo, subject,activationTemplate(msg, action));
+    return {
+      status: 200,
+        message: 'User account status updated successfully',
+    };
+  } catch (error:any) {
+   throw new Error("Account status failed to update");
+  }
 };
 

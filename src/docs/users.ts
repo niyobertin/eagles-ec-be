@@ -330,3 +330,30 @@ export const updateUserRole ={
   },
 };
 
+export const changeUserAccountStatus = {
+  tags: ["Users"],
+  security: [{ bearerAuth: [] }],
+  summary: "change user account status",
+  parameters: [
+    {
+      in: "path",
+      name: "userId",
+      required: true,
+      schema: {
+        type: "string",
+      },
+      description: "ID of the user to change",
+    },
+  ],
+  responses: {
+    200: {
+      description: "OK - User account changed successfully",
+    },
+    404: {
+      description: "Not Found - User not found",
+    },
+    500: {
+      description: "Internal Server Error",
+    }
+  }
+};
