@@ -5,7 +5,8 @@ import {
     createProducts,
     getSingleProduct,
     updateProducts,
-    deleteProduct
+    deleteProduct,
+    searchProduct
 } from "../services/product.service";
 import { ProductType } from "../types";
 
@@ -161,3 +162,18 @@ export const removeProducts = async(req:Request,res:Response) =>{
           }); 
     }
 }
+
+
+export const searchProductController = async (req: Request, res: Response) => {
+    const { name, minPrice, maxPrice, category, expirationDate } = req.query;
+    
+    try {
+        const search = { name, minPrice, maxPrice, category, expirationDate }; 
+        // @ts-ignore
+        const products = await searchProduct(search, req, res); 
+        res.json(products);
+  
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server Error' });
+    }
+};
