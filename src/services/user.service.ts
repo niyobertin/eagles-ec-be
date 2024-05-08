@@ -9,6 +9,7 @@ import { Op, QueryTypes } from "sequelize";
 import userRoutes from "../routes/userRoutes";
 import sequelize from "../config/dbConnection";
 import { activationTemplate } from "../email-templates/activation";
+import redisClient from "../config/redis";
 
 
 
@@ -198,4 +199,9 @@ export const updateUserAccountStatus = async (userId:any) => {
    throw new Error("Account status failed to update");
   }
 };
+
+export const addToBlacklist = async (token: string) => {
+  const blacklist = await redisClient.lpush('token', token);
+  return blacklist;
+}
 

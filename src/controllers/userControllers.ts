@@ -14,6 +14,7 @@ import uploadFile from "../utils/handleUpload";
 import { updateUserRoleService } from "../services/user.service";
 import { generateRandomNumber } from "../utils/generateRandomNumber";
 import { env } from "../utils/env";
+import redisClient from "../config/redis";
 
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
@@ -339,4 +340,32 @@ export const changeUserAccountStatus = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const updateStatusResult = await userService.updateUserAccountStatus(userId);
   return res.status(updateStatusResult.status).json(updateStatusResult);
+}
+
+export const logout = async(req:Request,res:Response) =>{
+  let token: string | undefined;
+    try{
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith("Bearer ")
+        ) {
+            token = req.headers.authorization.split(" ")[1];
+        }
+        if (!token) {
+            return res.status(401).json({
+                status: "Unauthorized",
+                message: "You are not logged in. Please login to continue.",
+            });
+        }
+    const blacklist = await userService.addToBlacklist(token)
+    if(blacklist){
+      res.status(200).json({
+        message: "You're Logged Out Successfully"
+      })
+    }
+  } catch (error:any) {
+    res.status(500).json({
+      message:error.message
+    })
+  }
 }
