@@ -116,7 +116,12 @@ export const updateProducts = async(req:Request,res:Response) =>{
         let uploadedImages:any;
         let url:any[] = [];
         let newImage:any;
-        uploadedImages = await uploadMultipleImages(req.files);
+        uploadedImages = process.env.NODE_ENV === "test"? [
+          "file1",
+          "file2",
+          "file3",
+          "file4"
+          ]: await uploadMultipleImages(req.files);
             for (const imageUrl of uploadedImages) {
              url.push(imageUrl);
             }

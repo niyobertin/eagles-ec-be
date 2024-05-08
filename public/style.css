@@ -1,0 +1,127 @@
+*{
+    margin: 0;
+    padding: 0; 
+}
+body{
+    background-color: #ebebeb;
+    font-family: 'Arial Narrow';
+    font-size: large;
+}
+h1,h4 {
+    text-align: center;
+}
+.main{
+    background-color: rgb(211, 209, 209);
+    display: flex;
+    justify-content: center;
+    justify-content: space-between;
+    flex: 1;
+    width: 100%;
+}
+.chat-room{
+    height: 29rem;
+    width: 100%;
+}
+.messages{
+background-color:white;
+height: 24.8rem;
+width: 98%;
+overflow-y: auto;
+border-radius: 15px 15px 0px 0px;
+border-bottom: 2px solid rgb(183, 181, 181);
+margin-bottom: 0%;
+}
+.chat-area{
+    width: 80%; 
+    margin-left: 10%;
+    margin-right: 10%;
+}
+.active_user{
+    background-color: rgb(183, 181, 181);
+    width: 25%;
+}
+.messages-right{
+    background-color: rgb(239, 235, 235);
+    width:50% ;
+    margin: 2%;
+    text-align: start;
+    height: fit-content;
+    padding: 2%;
+    border-radius: 20px 20px 20px 0px ;
+    list-style: none;
+}
+.message {
+    background-color: rgb(46, 44, 44);
+    width:50% ;
+    height: fit-content;
+    margin: 2%;
+    margin-left: 45%;
+    border-radius: 20px 20px 0px 20px ;
+    text-align: start;
+    padding: 2%;
+    color: white;
+}
+.messages-left{
+    background-color: rgb(46, 44, 44);
+    width:50% ;
+    height: fit-content;
+    margin: 2%;
+    margin-left: 45%;
+    border-radius: 20px 20px 0px 20px ;
+    text-align: start;
+    padding: 2%;
+    color: white;
+    list-style: none;
+    }
+    
+.send-message{
+    display: flex;
+}
+.message-input{
+    width: 86%;
+    padding: 1%;
+    border: none;
+    font-size: large;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+.messages-left,.messages-right > li{
+    text-decoration: none;
+    list-style: none;
+}
+.userName{
+    width: 80%;
+    padding: 2%;
+    border-radius: 20px;
+    border: none;  
+    background-color: rgb(211, 209, 209);
+}
+.user-name > span{
+    background-color: aliceblue;
+    padding: 1%;
+    border-radius: 50%;
+}
+
+button {
+    padding: 0%;
+    width:10%;
+    font-size: large;
+    background-color: rgb(90, 87, 87);
+    border: none;
+    cursor: pointer;
+    border-radius: 0px 0px 20px 0px ;
+}
+.sender{
+    font-size: small;
+}
+.active-list{
+height: 29rem;
+width: 98%;
+color: rgb(0, 0, 0);
+overflow-y: auto;
+border-top: white solid 2px;
+margin-bottom: 1%;
+margin-left: 2%;
+}
+.active{
+    padding: 5%;
+}

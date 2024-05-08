@@ -5,6 +5,8 @@ import { sign, verify } from "jsonwebtoken";
 export const generateToken = async (user: IUser) => {
   const accessToken = sign(
     {
+      id:user.id,
+      name:user.name,
       email: user.email,
       password: user.password,
     },
