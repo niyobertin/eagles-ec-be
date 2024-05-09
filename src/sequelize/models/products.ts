@@ -11,6 +11,7 @@ export interface ProductsAttributes{
   discount:number,
   categoryID:number,
   userId:number,
+  isAvailable?: boolean,
   expiryDate:Date,
   createdAt?:Date,
   updatedAt?:Date 
@@ -25,6 +26,7 @@ class Product extends Model<ProductsAttributes> implements ProductsAttributes{
     expiryDate!: Date;
     discount!: number;
     categoryID!: number;
+    isAvailable: boolean | undefined;
     userId!: number;
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
@@ -72,6 +74,11 @@ Product.init({
             model:"User",
             key:"id"
         }
+    },
+    isAvailable:{
+        type:DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     },
     expiryDate:{
       allowNull: false,

@@ -6,26 +6,21 @@ import {
     getSingleProduct,
     updateProducts,
     deleteProduct,
-    searchProduct
+    searchProduct,
+    updateProductAvailability
+    
 } from "../services/product.service";
 import { ProductType } from "../types";
 
 export const fetchProducts =  async(req:Request,res:Response) =>{
     try {
+        //@ts-ignore
+        console.log(req.viewer)
         const products = await getAllProducts(req,res);
-        if(products.length <=0){
-            res.status(200)
-            .json({
-                status:200,
-                message:"Products list is empty"
-            });
-        }else{
-            res.status(200).json({
-                message: "Products fetched successfully",
-                count: products.length,
-                products: products,
-              });
-        }
+       return  res.status(200).json({
+                    message: "Products fetched successfully",
+                    products: products,
+                  });
     } catch (error:any) {
         res.status(500).json({
             message: "Internal server error",
@@ -38,7 +33,7 @@ export const fetchSingleProduct = async(req:Request,res:Response) => {
     try {
         const id = req.params.id;
         const product =  await getSingleProduct(req,res,id);
-        if(product === null){
+        if(product === null || product.length === 0){
             res.status(404)
             .json({
                 status:404,
@@ -175,5 +170,13 @@ export const searchProductController = async (req: Request, res: Response) => {
   
     } catch (error) {
         res.status(500).json({ error: 'Internal server Error' });
+    }
+};
+export const productAvailability = async (req: Request, res: Response) => {
+    try {
+        const availability = await updateProductAvailability(req,res);
+        return availability;
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };

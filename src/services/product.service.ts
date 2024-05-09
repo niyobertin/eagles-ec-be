@@ -8,34 +8,89 @@ import { Op } from "sequelize";
 import { SearchQuery } from "../types";
 import { Role } from "../sequelize/models/roles";
 import { authStatus } from "../utils/isSellerOrNormalUser";
+import sequelize from "../config/dbConnection";
+import { loggedInUser } from "./user.service";
+import User from "../sequelize/models/users";
+
 
 export const getAllProducts = async (req: Request, res: Response) => {
- try {
-    await isLoggedIn(req,res,() => {});
-      //@ts-ignore
-      const loggedInUser:any = req.user;
-      const products  = await Product.findAll({where:{userId:loggedInUser.id},
-        include:{model:Category}});
-    if(!products){
-        return "products list is empty";
+  let products:any;
+  try {
+    await authStatus(req,res)
+    //@ts-ignore
+    const role = await Role.findByPk(req.user?.roleId);
+    if(req.user  && role?.name === 'seller'){
+        products = await Product.findAll({
+          where:{
+            //@ts-ignore
+            userId:req.user.id,
+          },
+          include: [
+            { model: Category },
+              {model:User}
+          ],
+        });
+    }
+   else {
+      // Other users only see available products for all sellers
+      const currentDate = new Date()
+       products = await Product.findAll({
+        where: { 
+          isAvailable: true,
+          expiryDate: {
+            [Op.gt]: currentDate, 
+          },
+         },
+        include: [
+          { model: Category },
+            {model:User}
+        ],
+      });
     }
     return products;
-   } catch (error:any) {
-        throw new Error(error.message);
-   }
-} 
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
 
 export const getSingleProduct = async(req:Request,res:Response,id:string) =>{
-    try {
-        await isLoggedIn(req,res,() => {});
-      //@ts-ignore
-      const loggedInUser:any = req.user;
-        const product = await Product.findOne({where:{id,userId:loggedInUser.id},
-            include:{model:Category}});
-        return product;
-    } catch (error:any) {
-        throw new Error(error.message); 
+  let product:any;
+  try {
+    await authStatus(req,res)
+    //@ts-ignore
+    const role = await Role.findByPk(req.user?.roleId);
+    if(req.user  && role?.name === 'seller'){
+        product = await Product.findOne({
+          where:{
+            id,
+            //@ts-ignore
+            userId:req.user.id,
+          },
+          include: [
+            { model: Category },
+              {model:User}
+          ],
+        });
     }
+   else {
+      // Other users only see available products for all sellers
+      const currentDate = new Date()
+       product = await Product.findAll({
+        where: {
+           id,isAvailable: true,
+           expiryDate: {
+            [Op.gt]: currentDate, 
+          }, },
+        include: [
+          { model: Category },
+            {model:User}
+        ],
+      });
+    }
+    return product;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 }
 
 
@@ -127,16 +182,25 @@ export const searchProduct = async (search: SearchQuery, req: Request, res: Resp
   try {
     const { name, minPrice, maxPrice, category, expirationDate } = search;
     await authStatus(req, res);
+    const currentDate = new Date()
 
     let query: any = {
       include: [
         {
-          model: Category,
+          model: Category
+        },
+        {
+          model: User
         },
       ],
+      where:{
+        expiryDate: {
+          [Op.gt]: currentDate, 
+        },
+      }
     };
     if (name) {
-      query.where = { ...query.where, name: { [Op.iLike]: `%${name}%` } };
+      query.where = { ...query.where, name: { [Op.iLike]: `%${name}%` } ,};
     }
     if (minPrice && maxPrice) {
       query.where = {
@@ -156,6 +220,7 @@ export const searchProduct = async (search: SearchQuery, req: Request, res: Resp
         ...query.include[0].where,
         name: { [Op.iLike]: `%${category}%` },
       };
+      
     }
 
     let products;
@@ -182,6 +247,7 @@ export const searchProduct = async (search: SearchQuery, req: Request, res: Resp
         products = await Product.findAll(query);
       }
     } else {
+      query.where = { ...query.where, isAvailable: true };
       products = await Product.findAll(query);
     }
 
@@ -194,5 +260,26 @@ export const searchProduct = async (search: SearchQuery, req: Request, res: Resp
   } catch (error: any) {
     throw new Error(error.message);
   }
+}
+export const updateProductAvailability = async (req: Request, res: Response) => {
+    const productId = req.params.id;
+    if (!productId) {
+        return res.status(400).json({ message: 'Product ID is required' });
+    }
+
+    try {
+        let product = await Product.findByPk(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        await Product.update(
+            { isAvailable: !product.isAvailable },
+            { where: { id: productId } }
+        );
+        return res.status(200).json({ message: 'Product availability updated successfully', isAvailable: !product.isAvailable });
+    } catch (error) {
+        console.error('Error updating product availability:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 };
 

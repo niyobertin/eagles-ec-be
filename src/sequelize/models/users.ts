@@ -3,6 +3,7 @@ import sequelize from '../../config/dbConnection';
 import Profile from './profiles';
 import {Role} from './roles'; 
 import Wishes from './wishes';
+import Product from './products';
 
 export interface UserAttributes {
   id?: number;
@@ -110,6 +111,13 @@ User.init(
     foreignKey: 'userId',
     as: 'user'
   })
+
+  User.hasMany(Product,{
+    foreignKey: 'categoryID'
+});
+Product.belongsTo(User,{
+    foreignKey: 'categoryID'
+});
 
 
 export default User;

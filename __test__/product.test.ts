@@ -323,4 +323,17 @@ test('It should return status 200 for removed category',async() =>{
       .set("Authorization", "Bearer " + token);
     expect(response.body.status).toBe(404);
   });
+
+  it("changing product availability without login", async ()=>{
+    const response = await request(app)
+      .patch(`/api/v1/products/${productId}/status`)
+      expect(response.body.status).toBe('Unauthorized');
+      expect(response.body.message).toBe('You are not logged in. Please login to continue.');    
+  })
+  it("changing product availability of product which does not exist", async ()=>{
+    const response = await request(app)
+      .patch(`/api/v1/products/${91}/status`)
+      .set("Authorization", "Bearer " + token);
+      expect(response.body.message).toBe('Product not found')      
+  })
 });
