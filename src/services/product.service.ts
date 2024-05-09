@@ -4,8 +4,13 @@ import Category from "../sequelize/models/categories";
 import { uploadMultipleImages } from "../utils/uploadImages";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { ProductType } from "../types";
-export const getAllProducts = async(req:Request,res:Response) => {
-   try {
+import { Op } from "sequelize";
+import { SearchQuery } from "../types";
+import { Role } from "../sequelize/models/roles";
+import { authStatus } from "../utils/isSellerOrNormalUser";
+
+export const getAllProducts = async (req: Request, res: Response) => {
+ try {
     await isLoggedIn(req,res,() => {});
       //@ts-ignore
       const loggedInUser:any = req.user;
@@ -117,3 +122,77 @@ export const deleteProduct = async(req:Request,res:Response) =>{
         }
     }
 }
+
+export const searchProduct = async (search: SearchQuery, req: Request, res: Response) => {
+  try {
+    const { name, minPrice, maxPrice, category, expirationDate } = search;
+    await authStatus(req, res);
+
+    let query: any = {
+      include: [
+        {
+          model: Category,
+        },
+      ],
+    };
+    if (name) {
+      query.where = { ...query.where, name: { [Op.iLike]: `%${name}%` } };
+    }
+    if (minPrice && maxPrice) {
+      query.where = {
+        ...query.where,
+        price: { [Op.between]: [minPrice, maxPrice] },
+      };
+    } else {
+      if (minPrice) {
+        query.where = { ...query.where, price: { [Op.gte]: minPrice } };
+      }
+      if (maxPrice) {
+        query.where = { ...query.where, price: { [Op.lte]: maxPrice } };
+      }
+    }
+    if (category) {
+      query.include[0].where = {
+        ...query.include[0].where,
+        name: { [Op.iLike]: `%${category}%` },
+      };
+    }
+
+    let products;
+    if (req.user) {
+      //@ts-ignore
+      const { roleId, id } = req.user;
+      const role = await Role.findByPk(roleId);
+
+      if (role?.name === "seller") {
+        query.where = { ...query.where, userId: id };
+        if (expirationDate) {
+          const searchedDate = new Date(expirationDate);
+          query.where = {
+            ...query.where,
+            [Op.and]: [
+              { expiryDate: { [Op.gte]: searchedDate } },
+              { createdAt: { [Op.lte]: searchedDate } },
+            ],
+          };
+        }
+        
+        products = await Product.findAll(query);
+      } else {
+        products = await Product.findAll(query);
+      }
+    } else {
+      products = await Product.findAll(query);
+    }
+
+    if (products.length === 0) {
+      const message = "No products found matching your searching";
+      return { status: 404, message };
+    }
+
+    return products;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+

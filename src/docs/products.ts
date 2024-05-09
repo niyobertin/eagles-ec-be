@@ -183,3 +183,61 @@ export const getProducts = {
       },
     }
   }
+
+  export const searchProduct = {
+    tags: ['Products'],
+    security: [{bearerAuth: []}],
+    summary: 'Search products',
+    parameters: [
+      {
+        name: 'name',
+        in: 'query',
+        description: 'Search for products by name',
+       
+        schema: {
+          type: 'string',
+        },
+      },
+      {
+        name: 'minPrice',
+        in: 'query',
+        description: 'Minimum price of product',
+        schema: {
+          type: 'number',
+        },
+      },
+      {
+        name: 'maxPrice',
+        in: 'query',
+        description: 'Maximum price of product',
+        schema: {
+          type: 'number',
+        },
+      },
+      {
+        name: 'category',
+        in: 'query',
+        description: 'Search for products by category',
+        schema: {
+          type: 'string',
+        },
+      },
+      {
+        name: 'expirationDate',
+        in: 'query',
+        description: 'Search expired products',
+        schema: {
+          type: 'date'
+        }
+      }
+    ],
+    responses: {
+      '200': {
+        description: 'Successful response',
+        },
+      },
+      '404': {
+        description: 'No products found',
+      },
+    }
+  

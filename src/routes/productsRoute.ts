@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../utils/uploadImages";
-import {  fetchProducts, addProducts, fetchSingleProduct, productsUpdate, removeProducts} from "../controllers/productControllers";
+import {  fetchProducts, addProducts, fetchSingleProduct, productsUpdate, removeProducts, searchProductController} from "../controllers/productControllers";
 import { validateSchema } from "../middlewares/validator";
 import { productDataSchema } from "../schemas/productSchema";
 import { isAseller } from "../middlewares/sellerAuth";
@@ -8,6 +8,8 @@ import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { isCategoryExist } from "../middlewares/isCategoryExist";
 
 const productsRouter = Router();
+productsRouter.get("/search", searchProductController)
+
 productsRouter.get("/",isLoggedIn,isAseller,fetchProducts);
 productsRouter.get("/:id",isLoggedIn,isAseller,fetchSingleProduct);
 productsRouter.post("/",isLoggedIn,isAseller,upload.array('images'),

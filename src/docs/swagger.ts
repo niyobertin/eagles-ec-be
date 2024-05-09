@@ -29,7 +29,8 @@ import {
     updateProducts,
    getSingleProducts,
    deleteProducts,
-   productSchema } from "./products"; 
+   productSchema, 
+   searchProduct} from "./products"; 
  import {
     getCategories,
     addCategories,
@@ -131,8 +132,11 @@ const options = {
   "/api/v1/wishes/{id}": {
     get: getWishesByProduct,
     delete: deleteWish
-  }
   },
+    "/api/v1/products/search" : {
+      get: searchProduct
+   }
+ },
 
   components: {
     schemas: {

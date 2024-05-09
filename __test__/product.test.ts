@@ -1,6 +1,6 @@
 import request from "supertest";
 import path from "path";
-import fs from 'fs';
+import fs from "fs";
 import { beforeAll, afterAll, jest, test } from "@jest/globals";
 import app from "../src/utils/server";
 import Product from "../src/sequelize/models/products";
@@ -41,6 +41,12 @@ const product:any = {
     password: "soleil00",    
   }
 
+const searchProduct: any = {
+  name: "iphone",
+  minPrice: 0,
+  maxPrice: 0,
+  category: "Electronic device",
+};
 
 describe("Testing product Routes", () => {
     beforeAll(async () => {
@@ -298,7 +304,23 @@ test('It should return status 200 for removed category',async() =>{
   .delete(`/api/v1/categories/${id}`)
   .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(200);
-},20000);
-
+ }, 20000);
+ 
+  test("it should return status 200 when searching product", async () => {
+    const response = await request(app)
+      .get("/api/v1/products/search")
+      .set("Authorization", "Bearer " + token);
+    expect(response.status).toBe(200);
+  });
+  test("return status 200 when none seller role search products", async () => {
+    const response = await request(app).get("/api/v1/products/search").send(searchProduct);
+    expect(response.status).toBe(200);
+  });
+  test("it should return status product is not available when searching product", async () => {
+    const response = await request(app)
+      .get("/api/v1/products/search")
+      .send(searchProduct)
+      .set("Authorization", "Bearer " + token);
+    expect(response.body.status).toBe(404);
+  });
 });
-
