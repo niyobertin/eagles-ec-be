@@ -7,7 +7,7 @@ import Product from "../src/sequelize/models/products";
 import Category from "../src/sequelize/models/categories";
 import sequelize, { connect } from "../src/config/dbConnection";
 import User from "../src/sequelize/models/users";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { Role } from "../src/sequelize/models/roles";
 
 const userData: any = {

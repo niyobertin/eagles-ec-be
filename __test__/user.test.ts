@@ -7,7 +7,7 @@ import * as mailServices from "../src/services/mail.service";
 import sequelize, { connect } from "../src/config/dbConnection";
 // import * as twoFAService from "../src/utils/2fa";
 import { profile } from "console";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { roleService } from "../src/services/role.service";
 import { Role } from "../src/sequelize/models/roles";
 import exp from "constants";
