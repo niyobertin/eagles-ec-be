@@ -45,3 +45,11 @@ export interface CategoryType{
   createdAt:Date,
   updatedAt:Date
   }
+
+  export interface SearchQuery {
+    name?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    category?: string;
+    expirationDate?: Date;
+  }

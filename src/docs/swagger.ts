@@ -29,7 +29,9 @@ import {
     updateProducts,
    getSingleProducts,
    deleteProducts,
-   productSchema } from "./products"; 
+   productSchema, 
+   searchProduct,
+   changeProductAvailability} from "./products"; 
  import {
     getCategories,
     addCategories,
@@ -120,6 +122,7 @@ const options = {
     get:getSingleCategory,
     patch:updateCategories,
     delete:deleteCategories,
+
   }, 
     "/api/v1/users/{userId}/status": {
       patch: changeUserAccountStatus,
@@ -127,37 +130,40 @@ const options = {
   "/api/v1/wishes": {
     post: AddToWishes,
     get: getWishes
+  } ,
+  "/api/v1/products/{id}/status": {
+    patch: changeProductAvailability,
   },
   "/api/v1/wishes/{id}": {
     get: getWishesByProduct,
     delete: deleteWish
-  }
   },
-
-  components: {
-    schemas: {
-      Role: RoleSchema,
-      User: userSchema,
-      Login: loginSchema,
-      updatePassword: updatePasswordSchema,
-      Profile: profileSchema,
-      Product:productSchema,
-      Category:categorySchema,
-      Wish: wishSchema
-    },
-    securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-        in: "header",
-        name: "Authorization",
-      },
+    "/api/v1/products/search" : {
+      get: searchProduct
+   }
+ },
+ components: {
+  schemas: {
+    Role: RoleSchema,
+    User: userSchema,
+    Login: loginSchema,
+    updatePassword: updatePasswordSchema,
+    Profile: profileSchema,
+    Product:productSchema,
+    Category:categorySchema,
+    Wish: wishSchema
+  },
+  securitySchemes: {
+    bearerAuth: {
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
+      in: "header",
+      name: "Authorization",
     },
   },
+},
 };
-     
-
 docRouter.use("/", serve, setup(options));
 
 export default docRouter;

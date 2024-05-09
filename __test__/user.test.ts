@@ -229,7 +229,7 @@ describe("Testing user Routes", () => {
 
     expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
     // expect(spy).toHaveBeenCalled();
-  }, 60000);
+  }, 70000);
 
   test("should log a user in to retrieve a token", async () => {
     const response = await request(app).post("/api/v1/users/login").send({

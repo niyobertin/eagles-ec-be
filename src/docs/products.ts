@@ -183,3 +183,88 @@ export const getProducts = {
       },
     }
   }
+
+  export const searchProduct = {
+    tags: ['Products'],
+    security: [{bearerAuth: []}],
+    summary: 'Search products',
+    parameters: [
+      {
+        name: 'name',
+        in: 'query',
+        description: 'Search for products by name',
+       
+        schema: {
+          type: 'string',
+        },
+      },
+      {
+        name: 'minPrice',
+        in: 'query',
+        description: 'Minimum price of product',
+        schema: {
+          type: 'number',
+        },
+      },
+      {
+        name: 'maxPrice',
+        in: 'query',
+        description: 'Maximum price of product',
+        schema: {
+          type: 'number',
+        },
+      },
+      {
+        name: 'category',
+        in: 'query',
+        description: 'Search for products by category',
+        schema: {
+          type: 'string',
+        },
+      },
+      {
+        name: 'expirationDate',
+        in: 'query',
+        description: 'Search expired products',
+        schema: {
+          type: 'date'
+        }
+      }
+    ],
+    responses: {
+      '200': {
+        description: 'Successful response',
+        },
+      },
+      '404': {
+        description: 'No products found',
+      },
+    }
+  
+  export const changeProductAvailability = {
+    tags: ["Products"],
+    security: [{ bearerAuth: [] }],
+    summary: "change product availability status",
+    parameters: [
+      {
+        in: "path",
+        name: "id",
+        required: true,
+        schema: {
+          type: "string",
+        },
+        description: "ID of the product to change",
+      },
+    ],
+    responses: {
+      200: {
+        description: "OK - product availability changed successfully",
+      },
+      404: {
+        description: "Not Found - product not found",
+      },
+      500: {
+        description: "Internal Server Error",
+      }
+    }
+  };
