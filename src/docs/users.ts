@@ -357,3 +357,21 @@ export const changeUserAccountStatus = {
     }
   }
 };
+
+export const logUserOut = {
+  tags: ["Users"],
+  security: [{ bearerAuth: [] }],
+  summary: "User Logout",
+  responses: {
+    200: {
+      description: "Success",
+    },
+    401: {
+      description: "Unauthorized",
+    },
+    500: {
+      description: "Internal Server Error",
+    }
+  }
+
+}

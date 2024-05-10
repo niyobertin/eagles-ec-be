@@ -1,6 +1,7 @@
 import { getUserByEmail } from "../services/user.service";
 import { Request, Response, NextFunction } from "express";
 import { decodeToken } from "../utils/jsonwebtoken"
+import redisClient from "../config/redis";
 
 export const isLoggedIn = async (req: Request, res: Response, next: NextFunction) => {
     let token: string | undefined = undefined;
@@ -20,6 +21,14 @@ export const isLoggedIn = async (req: Request, res: Response, next: NextFunction
         if (typeof token !== "string") {
             throw new Error("Token is not a string.");
         }
+
+        const result = await redisClient.lrange('token', 0, 99999999)
+        if (result.indexOf(token) > -1) {
+            return res.status(401).json({
+                message: "You've been logged out, Login again"
+            })
+        }
+
         const decoded: any = await decodeToken(token)
         const loggedUser: any = await getUserByEmail(decoded.email);
         if (!loggedUser) {

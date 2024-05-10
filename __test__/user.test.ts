@@ -12,6 +12,7 @@ import { roleService } from "../src/services/role.service";
 import { Role } from "../src/sequelize/models/roles";
 import exp from "constants";
 import { QueryTypes } from "sequelize";
+import redisClient from "../src/config/redis";
 
 const userData: any = {
   name: "yvanna5",
@@ -54,6 +55,7 @@ const updateData:any = {
   postalCode:"",
   country: "Rwanda",
  }
+ 
 
 describe("Testing user Routes", () => {
   beforeAll(async () => {
@@ -488,6 +490,13 @@ test("should return 409 when updating a role for a role that doesn't exist", asy
   expect(response.status).toBe(409);
 });
 
+test("should logout a user", async () => {
+  const response = await request(app)
+  .post("/api/v1/users/logout")
+  .set("Authorization", "Bearer " + token);
+  expect(response.status).toBe(200);
+})
+
 afterAll(async () => {
   try {
     await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');
@@ -495,6 +504,7 @@ afterAll(async () => {
     console.error('Error truncating tables:', error);
   } finally {
     try {
+      await redisClient.quit()
       await sequelize.close();
     } catch (error) {
       console.error('Error closing the database connection:', error);

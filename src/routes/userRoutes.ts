@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification, changeUserAccountStatus } from "../controllers/userControllers";
+import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification, changeUserAccountStatus, logout } from "../controllers/userControllers";
 import { emailValidation, validateSchema } from "../middlewares/validator";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { passwordUpdateSchema } from "../schemas/passwordUpdate";
@@ -31,7 +31,8 @@ userRoutes.post("/2fa-verify",otpVerification);
 userRoutes.get('/profile',
  isLoggedIn, 
  getProfileController
-)
+);
+userRoutes.post('/logout', isLoggedIn, logout);
 userRoutes.patch('/profile',
  isLoggedIn, 
  upload.single('profileImage'),

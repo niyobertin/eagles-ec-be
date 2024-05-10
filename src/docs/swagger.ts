@@ -14,7 +14,8 @@ import {
    updateProfile,
    verifyOTPToken,
    updateUserRole,
-   changeUserAccountStatus
+   changeUserAccountStatus,
+   logUserOut
   } from "./users";
   import {
     RoleSchema,
@@ -83,6 +84,9 @@ const options = {
       },
       "/api/v1/users/login": {
         post: loginAsUser
+    },
+    "/api/v1/users/logout": {
+      post: logUserOut
     },
     "/api/v1/users/passwordupdate": {
       put: passwordUpdate,

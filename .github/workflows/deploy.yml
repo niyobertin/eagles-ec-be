@@ -45,6 +45,7 @@ jobs:
           CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
           CLOUD_KEY: ${{ secrets.CLOUD_KEY }}
           CLOUD_SECRET: ${{ secrets.CLOUD_SECRET }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
 
         run: npm run test
 
