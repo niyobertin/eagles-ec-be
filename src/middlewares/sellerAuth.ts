@@ -1,6 +1,8 @@
 import {  Request,Response, NextFunction} from "express";
 import { isLoggedIn } from "./isLoggedIn";
 import { Role } from "../sequelize/models/roles";
+import { decodeToken } from "../utils/jsonwebtoken";
+import { getUserByEmail } from "../services/user.service";
 export const isAseller  = async(req:Request,res:Response,next:NextFunction) => {
   try {
     await isLoggedIn(req,res,() => {});
