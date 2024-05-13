@@ -1,10 +1,10 @@
 {
+  "$schema": "./node_modules/@types/json-schema/package.json",
   "name": "eagles-ec-be",
   "version": "1.0.0",
   "description": "A platform providing a marketplace for buyers and sellers to meet",
   "main": "index.ts",
   "scripts": {
-    "start": "",
     "pre-commit": "prettier . --write && eslint .",
     "lint": "eslint .",
     "dev": "nodemon index.ts",
@@ -76,7 +76,6 @@
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
-    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",
     "cors": "^2.8.5",

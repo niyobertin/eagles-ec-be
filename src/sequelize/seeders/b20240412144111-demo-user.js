@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const bcrypt = require("bcrypt");
+    const bcrypt = require("bcryptjs");
     
   
     
