@@ -9,6 +9,7 @@ import sequelize, { connect } from "../src/config/dbConnection";
 import User from "../src/sequelize/models/users";
 import bcrypt from "bcryptjs";
 import { Role } from "../src/sequelize/models/roles";
+import redisClient from "../src/config/redis";
 
 const userData: any = {
   name: "yvanna",
@@ -82,6 +83,7 @@ describe("Testing product Routes", () => {
     afterAll(async () => {
       await Product.destroy({where:{}});
       await sequelize.close();
+      await redisClient.quit()
     });
     test("should return 201 and create a new user when registering successfully", async () => {
       const response = await request(app)
@@ -142,14 +144,14 @@ describe("Testing product Routes", () => {
       });
 
     
-test('It should return status 201 for a created category',async() =>{
+  test('It should return status 201 for a created category', async () => {
   const imagePath = path.resolve(__dirname, '1680673137259.jpg');
   const imageBuffer = fs.readFileSync(imagePath);
   const response = await request(app)
   .post('/api/v1/categories')
   .attach('image', imageBuffer, { filename: '1680673137259.jpg' })
-  .field('name', 'Foods')
-  .field('description', 'Developing good healthy')
+  .field('name', 'Foodss6')
+  .field('description', 'Developisng6 good healthy')
   .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(201);
 },20000);

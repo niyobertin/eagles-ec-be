@@ -38,21 +38,26 @@ module.exports = {
       },
     });
 
-    await queryInterface.addColumn('users', 'roleId', {
-      type: Sequelize.INTEGER,
-      defaultValue: 1,
-      references: {
-        model: 'Roles',
-        key: 'id'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    
+    const isRoleIdColumnExists = await queryInterface.describeTable("users").then((columns) => {
+      return "roleId" in columns;
     });
+
+    if (!isRoleIdColumnExists) {
+      await queryInterface.addColumn("users", "roleId", {
+        type: Sequelize.INTEGER,
+        defaultValue: 1,
+        references: {
+          model: "Roles",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
+    }
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn('profiles', 'userId');
+    await queryInterface.removeColumn("profiles", "userId");
     await queryInterface.dropTable("users");
   },
 };

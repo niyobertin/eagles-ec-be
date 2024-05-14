@@ -12,7 +12,12 @@ import { roleService } from "../src/services/role.service";
 import { Role } from "../src/sequelize/models/roles";
 import exp from "constants";
 import { QueryTypes } from "sequelize";
-import redisClient from "../src/config/redis";
+// import redisClient from "../src/config/redis";
+import Redis from "ioredis";
+import { env } from "../src/utils/env";
+
+let redisClient:any;
+
 
 const userData: any = {
   name: "yvanna5",
@@ -60,6 +65,7 @@ const updateData:any = {
 describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
+       redisClient = new Redis(env.redis_url);
       await connect();
       await sequelize.query('TRUNCATE TABLE profiles, users CASCADE');
       const testAdmin = {

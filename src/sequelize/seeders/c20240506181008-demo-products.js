@@ -3,62 +3,62 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    return Promise.all([
+      queryInterface.bulkInsert("categories", [
+        {
+          name: "electronic devices",
+          description: "electronic devices",
+          image: "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Stationery",
+          description: "stationery products",
+          image: "https://img.freepik.com/premium-photo/different-school-stationeries-dark-wooden-table-top-view_508659-541.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Appareil and accessories",
+          description: "accessories",
+          image:
+            "https://www.hiscraves.com/blog/wp-content/uploads/2023/04/The-Best-Accessories-for-Men-to-Suit-Every-Occasion-%E2%80%93-A-Comprehensive-Guide-%E2%80%94.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Electric equipments",
+          description: "electric materials",
+          image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Fashion",
+          description: "Fashion products",
+          image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Home Furniture",
+          description: "Home & Office Furnitures",
+          image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]),
 
-    return Promise.all([queryInterface.bulkInsert("categories",[
-      {
-        name: "electronic devices",
-        description: 'electronic devices',
-        image: "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Stationery",
-        description: 'stationery products',
-        image: "https://img.freepik.com/premium-photo/different-school-stationeries-dark-wooden-table-top-view_508659-541.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Appareil and accessories",
-        description: "accessories",
-        image: "https://www.hiscraves.com/blog/wp-content/uploads/2023/04/The-Best-Accessories-for-Men-to-Suit-Every-Occasion-%E2%80%93-A-Comprehensive-Guide-%E2%80%94.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Electric equipments",
-        description: "electric materials",
-        image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Fashion",
-        description: "Fashion products",
-        image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Home Furniture",
-        description: "Home & Office Furnitures",
-        image: "https://www.hondapowerproducts.co.id/cfind/source/images/article/jenis%20alat%20kelistrikan%20dan%20fungsinya.jpg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-
-    ]),
-
-    queryInterface.bulkInsert(
-      "products",
-      [
+      queryInterface.bulkInsert("products", [
         {
           name: "MacBook Pro M3",
-          images: ["https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-          "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-        "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-      "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg"],
+          images: [
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+          ],
           stockQuantity: 10,
           price: 3000000,
           discount: 0,
@@ -70,10 +70,12 @@ module.exports = {
         },
         {
           name: "MacBook Pro M2",
-          images: ["https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-          "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-        "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
-      "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg"],
+          images: [
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+            "https://www.notebookcheck.net/fileadmin/_processed_/a/3/csm_IMG_1008_47c6b245b1.jpg",
+          ],
           stockQuantity: 10,
           price: 2100000,
           discount: 0,
@@ -85,10 +87,12 @@ module.exports = {
         },
         {
           name: "Iphone 13",
-          images: ["https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-          "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-        "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-      "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg"],
+          images: [
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+          ],
           stockQuantity: 10,
           price: 800000,
           discount: 0,
@@ -100,10 +104,12 @@ module.exports = {
         },
         {
           name: "Logitech Mouse",
-          images: ["https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-          "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-        "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-      "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg"],
+          images: [
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+          ],
           stockQuantity: 6,
           price: 20000,
           discount: 0,
@@ -115,10 +121,12 @@ module.exports = {
         },
         {
           name: "Mechanical Keyboard",
-          images: ["https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-          "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-        "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-      "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg"],
+          images: [
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+          ],
           stockQuantity: 5,
           price: 25000,
           discount: 0,
@@ -130,10 +138,12 @@ module.exports = {
         },
         {
           name: "Iphone 12",
-          images: ["https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-          "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-        "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
-      "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg"],
+          images: [
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+            "https://images.macrumors.com/t/egbqDs7OtftrKl9nJnbNgv1WET0=/1600x0/article-new/2021/09/Apple-iPhone-13-colors-lineup-2022.jpg",
+          ],
           stockQuantity: 10,
           price: 600000,
           discount: 0,
@@ -145,10 +155,12 @@ module.exports = {
         },
         {
           name: "USB Type C Cable",
-          images: ["https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/61PgZ9HzPTL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 10,
           price: 600000,
           discount: 0,
@@ -160,10 +172,12 @@ module.exports = {
         },
         {
           name: "OMOTON Laptop Stand",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 35000,
           discount: 0,
@@ -175,10 +189,12 @@ module.exports = {
         },
         {
           name: "Spiral-Bound Notebook",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 10,
           price: 8000,
           discount: 0,
@@ -190,10 +206,12 @@ module.exports = {
         },
         {
           name: "Spiral-Bound Notebook",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 7000,
           discount: 0,
@@ -205,10 +223,12 @@ module.exports = {
         },
         {
           name: "Men pants",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 15000,
           discount: 10,
@@ -220,10 +240,12 @@ module.exports = {
         },
         {
           name: "Black T-shirt",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 7000,
           discount: 0,
@@ -235,10 +257,12 @@ module.exports = {
         },
         {
           name: "Socket outlet",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 3000,
           discount: 0,
@@ -250,10 +274,12 @@ module.exports = {
         },
         {
           name: "Oneway Switch",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 10,
           price: 2500,
           discount: 0,
@@ -265,10 +291,12 @@ module.exports = {
         },
         {
           name: "Two way switch",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 3500,
           discount: 0,
@@ -280,10 +308,12 @@ module.exports = {
         },
         {
           name: "Office electric table",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 10,
           price: 600000,
           discount: 0,
@@ -295,10 +325,12 @@ module.exports = {
         },
         {
           name: "Home Sofa set",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 1000000,
           discount: 0,
@@ -310,10 +342,12 @@ module.exports = {
         },
         {
           name: "Office ergo Chair",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 200000,
           discount: 0,
@@ -325,10 +359,12 @@ module.exports = {
         },
         {
           name: "Dinning Table",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 15,
           price: 500000,
           discount: 0,
@@ -340,10 +376,12 @@ module.exports = {
         },
         {
           name: "Tv stand",
-          images: ["https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-          "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg"],
+          images: [
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+            "https://m.media-amazon.com/images/I/71cWPw6TxnL._AC_SL1500_.jpg",
+          ],
           stockQuantity: 8,
           price: 30000,
           discount: 0,
@@ -353,10 +391,8 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-      
-      ])
-  ]);
-
+      ]),
+    ]);
   },
 
   async down(queryInterface, Sequelize) {
