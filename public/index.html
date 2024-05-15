@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eagles E-commerce Chat Room</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login" id="login">
+        <form action="" id="loginForm">
+            <div class="email">
+                <span>Email:</span><input type="text" id="email">
+            </div><br>
+            <div class="password">
+                <span>Password:</span><input type="password" id="password">
+            </div><br>
+            <button type="submit">Login</button>
+        </form>
+    </div> 
+
+    <div class="main" id="chatRoom" style="display: none;">
+        <div class="chat-area">
+            <h1>Eagles E-commerce Chat Room</h1>
+            <p class="active" id="active">Active: <span id="active-number">0</span></p>
+            <div class="user-name">
+                <span><i class="fa-regular fa-user"></i></span> <input type="text" class="userName" id="user-name">
+            </div>
+            <div class="chat-room" id="chat-room">
+                <div class="messages" id="messages"></div>
+                <form class="send-message" id="send-message">
+                    <textarea class="message-input" id="message-input" placeholder="Start typing.."></textarea>
+                    <button type="submit">Send <span><i class="fa-regular fa-paper-plane"></i></span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="login.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
