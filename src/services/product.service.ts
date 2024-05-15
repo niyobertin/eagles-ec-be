@@ -268,12 +268,19 @@ export const searchProduct = async (search: SearchQuery, req: Request, res: Resp
 }
 export const updateProductAvailability = async (req: Request, res: Response) => {
     const productId = req.params.id;
+    await authStatus(req, res);
     if (!productId) {
         return res.status(400).json({ message: 'Product ID is required' });
     }
 
     try {
-        let product = await Product.findByPk(productId);
+        let product = await Product.findOne({
+          where:{
+            id:productId,
+            //@ts-ignore
+            userId:req.user.id,
+          }
+        });
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
@@ -283,7 +290,6 @@ export const updateProductAvailability = async (req: Request, res: Response) => 
         );
         return res.status(200).json({ message: 'Product availability updated successfully', isAvailable: !product.isAvailable });
     } catch (error) {
-        console.error('Error updating product availability:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
