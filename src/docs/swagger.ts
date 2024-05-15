@@ -42,6 +42,7 @@ import {
     categorySchema
   } from "./categories";
 import { AddToWishes, deleteWish, getWishes, getWishesByProduct, wishSchema } from "./wishes";
+  import { joinChats } from "./chats";
 
 const docRouter = express.Router();
 
@@ -137,6 +138,9 @@ const options = {
   } ,
   "/api/v1/products/{id}/status": {
     patch: changeProductAvailability,
+  },
+  "/api/v1/messages":{
+    get:joinChats
   },
   "/api/v1/wishes/{id}": {
     get: getWishesByProduct,

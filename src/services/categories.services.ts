@@ -48,7 +48,8 @@ export const updateCategories = async(req:Request) =>{
         if(req.file === undefined){
             imageUrl = undefined;
         }else{
-            imageUrl = await uploadImage(req.file);
+            imageUrl =  process.env.NODE_ENV === "test"? "file1": 
+            await uploadImage(req.file);
         }
         const category = await Category.findOne({where:{id}});
         if(category){
