@@ -60,7 +60,8 @@ import {
 
  export const addCategories = async(req:Request,res:Response) =>{
     try {
-        const imageUrl:any = await uploadImage(req.file);
+        const imageUrl:any = process.env.NODE_ENV === "test"? "file1":
+        await uploadImage(req.file);
         const {name,description}:CategoryType = req.body;
         const category = {
             name,

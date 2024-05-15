@@ -72,15 +72,15 @@ describe("Testing product Routes", () => {
           await User.create(testAdmin);
       
           const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
-        await Product.destroy({ truncate: true });
+        await Product.destroy({});
         await Category.destroy({truncate:true});
       } catch (error) {
-        sequelize.close();
+        console.log("error for products testing ", error)
       }
     }, 40000);
   
     afterAll(async () => {
-      await Product.destroy({ truncate: true });
+      await Product.destroy({where:{}});
       await sequelize.close();
     });
     test("should return 201 and create a new user when registering successfully", async () => {
