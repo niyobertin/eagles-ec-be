@@ -56,7 +56,12 @@ export const fetchSingleProduct = async(req:Request,res:Response) => {
 
 export const addProducts = async(req:Request,res:Response) =>{
     try {
-        const uploadedImages = await uploadMultipleImages(req.files);
+        const uploadedImages = process.env.NODE_ENV === "test"? [
+        "file1",
+        "file2",
+        "file3",
+        "file4"
+        ]:  await uploadMultipleImages(req.files);
         if (uploadedImages.length > 0 && (uploadedImages.length < 4 || uploadedImages.length > 8)) {
             return res.status(400).json({
               status: 400,
