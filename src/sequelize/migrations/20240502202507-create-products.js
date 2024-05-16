@@ -2,46 +2,46 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('products', {
-      id:{
+    await queryInterface.createTable("products", {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
-    },
-    name:{
+      },
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
-    },
-    images:{
-        type:Sequelize.ARRAY(Sequelize.STRING(10485760)),
+      },
+      images: {
+        type: Sequelize.ARRAY(Sequelize.STRING(10485760)),
         allowNull: false,
-    },
-    stockQuantity:{
-      allowNull: false,
-      type: Sequelize.INTEGER, 
-    },
-    price:{
+      },
+      stockQuantity: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      price: {
         allowNull: false,
         type: Sequelize.FLOAT,
-    },
-    discount:{
+      },
+      discount: {
         allowNull: false,
-        type: Sequelize.FLOAT,   
-    },
-    categoryID:{
-        type:Sequelize.INTEGER,
-        allowNull: false,  
-    },
-    userId:{
-        type:Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
+      },
+      categoryID: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-    },
-    expiryDate:{
-      allowNull: false,
-      type: Sequelize.DATE,
-    },
-    createdAt: {
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      expiryDate: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
@@ -52,6 +52,8 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('products');
-  }
+    await queryInterface.dropTable("products", {
+      force: true,
+    });
+  },
 };

@@ -15,7 +15,7 @@ import { ProductType } from "../types";
 export const fetchProducts =  async(req:Request,res:Response) =>{
     try {
         //@ts-ignore
-        console.log(req.viewer)
+        // console.log(req.viewer)
         const products = await getAllProducts(req,res);
        return  res.status(200).json({
                     message: "Products fetched successfully",

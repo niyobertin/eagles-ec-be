@@ -5,6 +5,7 @@ const envT = process.env.NODE_ENV;
 
 const sequelize = new Sequelize(envT === "test" ? env.test_db_url : env.db_url, {
   dialect: "postgres",
+  logging: false,
 });
 
 export const connect = async () => {
