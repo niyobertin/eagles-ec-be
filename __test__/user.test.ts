@@ -502,6 +502,53 @@ test("should logout a user", async () => {
   .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(200);
 })
+})
+
+let pwd_reset_token:any;
+
+describe('POST /send-reset-email', () => {
+  it('should send a reset email', async () => {
+      const response = await request(app)
+          .post('/api/v1/users/password-reset-link')
+          .send({ email:dummySeller.email });
+      pwd_reset_token = response.body.pwd_reset_token;
+      expect(response.status).toBe(200);
+      expect(response.body.message).toEqual("Password reset link sent to your email.");
+  },6000);
+  it('should send return 404 if user not found', async () => {
+      const response = await request(app)
+          .post('/api/v1/users/password-reset-link')
+          .send({ email:'unknown@emailValidation.com'});
+      expect(response.body.status).toBe(404);
+      expect(response.body.message).toEqual('User not found.');
+  },60000);
+});
+describe('Patch /api/v1/users/reset-password', () => {
+    it('should return 200 if reset password request is successful', async () => {
+        const requestBody = {
+            token: pwd_reset_token,
+            password: 'newPassword',
+            confirmPassword: 'newPassword'
+        };
+        const response = await request(app)
+            .patch('/api/v1/users/reset-password')
+            .send(requestBody);
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe("Password updated successfully.")
+    }, 60000);
+
+    it('should return 400 if invalid token is provided', async () => {
+      const requestBody = {
+          token: 'invalid-token',
+          password: 'newPassword',
+          confirmPassword: 'newPassword'
+      };
+      const response = await request(app)
+          .patch('/api/v1/users/reset-password')
+          .send(requestBody);
+      expect(response.status).toBe(400);
+  },60000);
+});
 
 afterAll(async () => {
   try {
@@ -517,8 +564,4 @@ afterAll(async () => {
     }
   }
 });
-
-})  
-
-
 

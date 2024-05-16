@@ -10,6 +10,10 @@ import userRoutes from "../routes/userRoutes";
 import sequelize from "../config/dbConnection";
 import { activationTemplate } from "../email-templates/activation";
 import redisClient from "../config/redis";
+import { generateResetToken, verifyResetToken } from "../utils/generateResetToken";
+import { env } from "../utils/env";
+import { generatePasswordResetEmail } from "../email-templates/generatePasswordResetEmail";
+import { generatePasswordUpdateEmailContent } from "../email-templates/generatePasswordUpdateEmailContent";
 
 
 
@@ -205,3 +209,45 @@ export const addToBlacklist = async (token: string) => {
   return blacklist;
 }
 
+
+export const  sendResetLinkEmail = async (email: any) =>{
+  try {
+    // @ts-ignore
+    const user:any = await User.findOne({ where: { email, password: { [Op.not]: null } } });
+    if (!user) {
+        return { status: 404, message: 'User not found.' };
+    }
+    const token = generateResetToken(email, 60);
+    const resetLink = `${process.env.REMOTE_URL || `${process.env.LOCAL_URL}:${process.env.PORT}`}/reset-password?token=${token}`;
+    const subject = "Forgot Password";
+    await sendEmailService(user, subject, generatePasswordResetEmail(resetLink));
+
+    return { 
+      status: 200, 
+      message: 'Password reset link sent to your email.',
+      pwd_reset_token:token     };
+} catch (error) {
+    return { status: 500, message: 'Internal server error.' };
+}
+}
+export const resetPassword = async (token: string, newPassword: string): Promise<{ status: number; message: string }> => {
+  try {
+      // Verify the reset token
+      const decodedToken = verifyResetToken(token);
+      if (!decodedToken) {
+          return { status: 400, message: 'Invalid token.' };
+      }
+      const user = await User.findOne({ where: { email: decodedToken.email } });
+      if (!user) {
+          return { status: 404, message: 'User not found.' };
+      }
+      const  subject = 'Password Updated Confirmation';
+      const hashPassword = await hashedPassword(newPassword);
+      await user.update({ password: hashPassword });
+      await sendEmailService(user,subject,generatePasswordUpdateEmailContent(user.name))
+
+      return { status: 200, message: 'Password updated successfully.' };
+  } catch (error) {
+      return { status: 500, message: 'Internal server error.' };
+  }
+};
