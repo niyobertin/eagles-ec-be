@@ -425,7 +425,7 @@ export const updateForgotPassword = {
               type: "string",
               description: "The reset token sent to the user's email"
             },
-            newPassword: {
+            password: {
               type: "string",
               description: "The new password"
             },

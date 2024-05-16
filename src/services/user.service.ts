@@ -208,12 +208,16 @@ export const addToBlacklist = async (token: string) => {
   const blacklist = await redisClient.lpush('token', token);
   return blacklist;
 }
+export const isTokenBlacklisted = async (token: string): Promise<boolean> => {
+  const isInBlacklist = await redisClient.lrange('token', 0, -1); 
+  return isInBlacklist.includes(token);
+};
 
 
 export const  sendResetLinkEmail = async (email: any) =>{
   try {
     // @ts-ignore
-    const user:any = await User.findOne({ where: { email, password: { [Op.not]: null } } });
+    const user:any = await User.findOne({ where: { email} });
     if (!user) {
         return { status: 404, message: 'User not found.' };
     }
@@ -225,29 +229,31 @@ export const  sendResetLinkEmail = async (email: any) =>{
     return { 
       status: 200, 
       message: 'Password reset link sent to your email.',
-      pwd_reset_token:token     };
+};
 } catch (error) {
     return { status: 500, message: 'Internal server error.' };
 }
 }
 export const resetPassword = async (token: string, newPassword: string): Promise<{ status: number; message: string }> => {
   try {
-      // Verify the reset token
-      const decodedToken = verifyResetToken(token);
-      if (!decodedToken) {
-          return { status: 400, message: 'Invalid token.' };
-      }
-      const user = await User.findOne({ where: { email: decodedToken.email } });
-      if (!user) {
-          return { status: 404, message: 'User not found.' };
-      }
-      const  subject = 'Password Updated Confirmation';
-      const hashPassword = await hashedPassword(newPassword);
-      await user.update({ password: hashPassword });
-      await sendEmailService(user,subject,generatePasswordUpdateEmailContent(user.name))
+    const decodedToken = verifyResetToken(token);
+    const isBlacklisted = await isTokenBlacklisted(token);
+    if (!decodedToken || isBlacklisted) {
+      return { status: 400, message: 'Invalid token.' };
+    }
+    const user = await User.findOne({ where: { email: decodedToken.email } });
+    if (!user) {
+      return { status: 404, message: 'User not found.' };
+    }
+    const hashPassword = await hashedPassword(newPassword);
+    await user.update({ password: hashPassword });
+    const subject = 'Password Updated Confirmation';
+    await sendEmailService(user, subject, generatePasswordUpdateEmailContent(user.name));
+    await addToBlacklist(token);
 
-      return { status: 200, message: 'Password updated successfully.' };
+    return { status: 200, message: 'Password updated successfully.' };
   } catch (error) {
-      return { status: 500, message: 'Internal server error.' };
+    return { status: 500, message: 'Internal server error.' };
   }
 };
+

@@ -14,6 +14,8 @@ import uploadFile from "../utils/handleUpload";
 import { updateUserRoleService } from "../services/user.service";
 import { generateRandomNumber } from "../utils/generateRandomNumber";
 import { env } from "../utils/env";
+import { Emailschema, resetPasswordSchema } from "../schemas/resetPasswordSchema";
+import Joi from "joi";
 
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
@@ -371,6 +373,11 @@ export const logout = async(req:Request,res:Response) =>{
 
 export const sendResetLinkEmail = async (req: Request, res: Response) => {
   try {
+      const { error } = Emailschema.validate(req.body);
+      if (error) {
+        const cleanErrorMessage = error.details.map(detail => detail.message.replace(/['"]/g, '').trim()).join(', ')
+        return res.status(400).json({ message: cleanErrorMessage });
+      }
       const { email } = req.body;
       const result = await userService.sendResetLinkEmail(email);
       return res.status(200).json(result);
@@ -381,10 +388,12 @@ export const sendResetLinkEmail = async (req: Request, res: Response) => {
 
 export const resetPasswordController = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { token, password, confirmPassword } = req.body;
-      if (password !== confirmPassword) {
-          return res.status(400).json({ message: 'Passwords do not match.' });
-      }
+    const { error } = resetPasswordSchema.validate(req.body);
+    if (error) {
+      const cleanErrorMessage = error.details.map(detail => detail.message.replace(/['"]/g, '').trim()).join(', ');
+      return res.status(400).json({ message: cleanErrorMessage});
+    }
+      const { token, password} = req.body;
       const result: any = await userService.resetPassword(token, password);
 
       return res.status(result.status).json({ message: result.message });

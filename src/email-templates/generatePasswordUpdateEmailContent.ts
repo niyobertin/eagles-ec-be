@@ -1,8 +1,3 @@
-/**
- * Generates the content for the password update confirmation email with inline CSS.
- * @param userName The name of the user.
- * @returns The HTML content of the email.
- */
 const generatePasswordUpdateEmailContent = (userName: string): string => {
     const htmlContent = `
       <!DOCTYPE html>
