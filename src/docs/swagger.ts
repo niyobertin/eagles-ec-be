@@ -15,7 +15,9 @@ import {
    verifyOTPToken,
    updateUserRole,
    changeUserAccountStatus,
-   logUserOut
+   logUserOut,
+   sendResetLink,
+   updateForgotPassword
   } from "./users";
   import {
     RoleSchema,
@@ -99,6 +101,14 @@ const options = {
     "/api/v1/users/2fa-verify": {
       post: verifyOTPToken,
     },
+    "/api/v1/users/password-reset-link": {
+      post: sendResetLink,
+    },
+    "/api/v1/users/reset-password": {
+      patch: updateForgotPassword,
+    },
+
+
     "/api/v1/roles": {
       get: getRoles,
       post: createRole,
