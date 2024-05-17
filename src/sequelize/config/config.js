@@ -10,7 +10,6 @@ module.exports = {
   test: {
     url: process.env.TEST_DB,
     dialect: "postgres",
-
     dialectOptions:
       process.env.IS_REMOTE === "true"
         ? {

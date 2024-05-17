@@ -11,12 +11,13 @@ import {
 import { categoriesDataSchema } from "../schemas/categorySchema";
 import { isAseller } from "../middlewares/sellerAuth";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
+import { isPasswordOutOfDate } from "../middlewares/isPasswordOutOfDate";
 const categoriesRouter = Router();
-categoriesRouter.get("/",isLoggedIn,isAseller,fetchCategories);
-categoriesRouter.get("/:id",isLoggedIn,isAseller,fetchSingleCategory);
-categoriesRouter.post("/",isLoggedIn,isAseller,upload.single('image'),validateSchema(categoriesDataSchema)
+categoriesRouter.get("/",isLoggedIn,isPasswordOutOfDate,isAseller,fetchCategories);
+categoriesRouter.get("/:id",isLoggedIn,isPasswordOutOfDate,isAseller,fetchSingleCategory);
+categoriesRouter.post("/",isLoggedIn,isPasswordOutOfDate,isAseller,upload.single('image'),validateSchema(categoriesDataSchema)
 ,addCategories);
-categoriesRouter.patch("/:id",isAseller,upload.single('image'),categoriesUpdate);
-categoriesRouter.delete("/:id",isLoggedIn,isAseller,removeCategories);
+categoriesRouter.patch("/:id",isAseller,isPasswordOutOfDate,upload.single('image'),categoriesUpdate);
+categoriesRouter.delete("/:id",isLoggedIn,isPasswordOutOfDate,isAseller,removeCategories);
 
 export default categoriesRouter;

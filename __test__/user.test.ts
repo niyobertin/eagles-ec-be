@@ -1,4 +1,5 @@
 import request from "supertest";
+import { mocked } from "jest-mock";
 import { beforeAll, beforeEach, afterEach, afterAll, test } from "@jest/globals";
 import app from "../src/utils/server";
 import User from "../src/sequelize/models/users";
@@ -25,14 +26,15 @@ const userData: any = {
   username: "testuser5",
   email: "test15@gmail.com",
   password: "test12345",
+  lastPasswordUpdateTime: new Date()
 };
-
 
 const dummySeller = {
   name: "dummy1234",
   username: "username1234",
   email: "soleilcyber00@gmail.com",
   password: "1234567890",
+  lastPasswordUpdateTime: "3000, 11, 18"
 };
 const userTestData = {
   newPassword: "Test@123",
@@ -62,7 +64,8 @@ const updateData:any = {
   country: "Rwanda",
  }
  
-
+ jest.mock('../src/jobs/isPasswordExpired');
+ 
 describe("Testing user Routes", () => {
   beforeAll(async () => {
     try {
@@ -103,7 +106,6 @@ describe("Testing user Routes", () => {
       const response = await request(app)
         .post("/api/v1/users/register")
         .send(userData);
-        
       expect(response.status).toBe(201);
     }, 20000);
 
@@ -225,6 +227,7 @@ describe("Testing user Routes", () => {
         roleId: 2,
       })
       .set("Authorization", "Bearer " + adminToken);
+    
     expect(response.status).toBe(200);
     
   });

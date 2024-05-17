@@ -12,6 +12,7 @@ export interface UserAttributes {
   username: string;
   email: string;
   password: string | undefined;
+  lastPasswordUpdateTime?: Date;
   roleId: number | undefined;
   isActive?:boolean;
   createdAt?: Date;
@@ -24,6 +25,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   username!: string;
   email!: string;
   password!: string;
+  lastPasswordUpdateTime!:Date | undefined;
   isActive: boolean | undefined;
   roleId!: number | undefined;
   createdAt!: Date | undefined;
@@ -53,6 +55,9 @@ User.init(
     password: {
       allowNull: true,
       type: DataTypes.STRING,
+    },
+    lastPasswordUpdateTime:{
+      type: DataTypes.DATE
     },
     roleId: {
       type: DataTypes.NUMBER,
