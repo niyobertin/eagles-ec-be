@@ -12,6 +12,9 @@ import sequelize from "../config/dbConnection";
 import { loggedInUser } from "./user.service";
 import User from "../sequelize/models/users";
 import eventEmmiter from "../events/emmiter";
+import Review from "../sequelize/models/reviews";
+import { ReviewType } from "../types";
+
 
 export const getAllProducts = async (req: Request, res: Response) => {
   let products: any;
@@ -272,3 +275,59 @@ export const updateProductAvailability = async (req: Request, res: Response) => 
 export const disableProductVisisbility = async (id: number) => {
   await Product.update({ isAvailable: false }, { where: { id: id } });
 };
+export const getProductReviews= async(productId:any) => {
+  try {
+    const review = await Review.findAll({
+      where: {productId},
+      include: [
+       {
+        model: User,
+        as: "user",
+        attributes: ["id", "name"],
+       }
+      ]
+    })
+    return review
+  } catch (error:any) {
+    throw new Error(error.message);
+  }
+}
+
+export const createReview =  async(data:ReviewType) => {
+  const {userId, productId} = data
+let obj:any;
+ obj = data
+  const existingReview = await Review.findOne({
+    where: { userId, productId}
+  })
+
+  if (!existingReview) {
+   const addReview = await Review.create(obj)
+  return addReview;
+  }
+  throw new Error("Can't review a product twice.");
+}
+
+export const deleteReview = async (data: ReviewType) => {
+  const { userId, reviewId } = data;
+  const isReviewExist = await Review.findOne({
+    where: { userId, id: reviewId}
+  })
+  if (!isReviewExist) {
+    throw new Error("Review not found!");
+  }
+ const reviewFound = await isReviewExist.destroy()
+ return reviewFound;
+}
+
+export const updateReview = async (data: ReviewType) => {
+  const { userId, productId, reviewId, rating, feedback } = data;
+  const review = await Review.findOne({ where: { userId, productId, id: reviewId } });
+  if (!review) {
+    throw new Error("Review not found");
+  }
+  review.rating = rating;
+  review.feedback = feedback;
+  return await review.save();
+};
+

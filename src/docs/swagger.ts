@@ -44,6 +44,7 @@ import { addItemToCartDoc, clearAllProductFromCartDoc, removeProductFromCartDoc,
 import { getAllNotifications, readNotification } from "./notifications";
 import { homepage } from "./home";
 import { payment } from "./payments";
+import { createReviewProduct, deleteReview, getReviewProduct, reviewSchema, updateReviewProduct } from "./reviews";
 
 const docRouter = express.Router();
 
@@ -179,7 +180,13 @@ const options = {
     },
     "/api/v1/payment/checkout": {
       post: payment
-    }
+    },
+    "/api/v1/products/{pid}/reviews":  {
+      get: getReviewProduct,
+      post: createReviewProduct,
+      patch: updateReviewProduct,
+      delete: deleteReview
+    },
   },
   components: {
     schemas: {
@@ -191,6 +198,7 @@ const options = {
       Product: productSchema,
       Category: categorySchema,
       Wish: wishSchema,
+      Review: reviewSchema
     },
     securitySchemes: {
       bearerAuth: {

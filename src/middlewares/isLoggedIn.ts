@@ -18,23 +18,13 @@ export const isLoggedIn = async (req: Request, res: Response, next: NextFunction
                 message: "You are not logged in. Please login to continue.",
             });
         }
-        if (typeof token !== "string") {
-            throw new Error("Token is not a string.");
-        }
-
         const result = await redisClient.lrange('token', 0, 99999999)
-        if (result.indexOf(token) > -1) {
-            return res.status(401).json({
-                message: "You've been logged out, Login again"
-            })
-        }
-
         const decoded: any = await decodeToken(token)
         const loggedUser: any = await getUserByEmail(decoded.email);
-        if (!loggedUser) {
+        if (!loggedUser || (result.indexOf(token) > -1)) {
             return res.status(401).json({
                 status: "Unauthorized",
-                message: "Token has expired. Please login again.",
+                message: "Please login to continue",
             });
         }
         // @ts-ignore

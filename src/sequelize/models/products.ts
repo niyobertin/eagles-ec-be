@@ -1,6 +1,7 @@
 import { Model,DataTypes } from "sequelize";
 import sequelize from "../../config/dbConnection";
 import Wishes from "./wishes";
+import Review from "./reviews";
 
 export interface ProductsAttributes{
   id?:number,
@@ -107,6 +108,16 @@ Product.hasMany(Wishes, {
     foreignKey: 'productId',
     as: 'product'
   });
+Product.hasMany(Review, {
+    foreignKey: 'productId', 
+    as: 'review'
+  })
+  
+Review.belongsTo(Product, {
+    foreignKey: 'productId',
+    as: 'product'
+  });
+
 
 export default Product;
 
