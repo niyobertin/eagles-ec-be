@@ -2,10 +2,25 @@ import Wishes from "../sequelize/models/wishes";
 import { Op } from "sequelize";
 import Product from "../sequelize/models/products";
 import User from "../sequelize/models/users";
+import { Role } from "../sequelize/models/roles";
 
-export const getAllUserWishes = async (userId: number) => {
-    const wishes = await Wishes.findAll({ where: { userId }, include: {model: Product, as: 'product'}});
-    return wishes;
+export const getAllUserWishes = async (userId: number, roleId: number) => {
+    const role = await Role.findByPk(roleId);
+    if(role?.name === 'seller'){
+        const wishes = await Wishes.findAll({where: { sellerId: userId }, include: [
+            { 
+              model: User,
+              as: 'user',
+              attributes: ['name', 'username', 'email']
+            }
+            ,{ model: Product, as: 'product'}
+          ]});
+        return wishes
+    } else {
+        const wishes = await Wishes.findAll({ where: { userId }, include: {model: Product, as: 'product'}});
+        return wishes;
+    }
+    
 }
 
 export const getSingleWish = async (userId: number, productId: number) => {
@@ -19,9 +34,10 @@ export const getProduct = async (productId: number) => {
 }
 
 export const addToWishlist = async (userId: number, productId:number) => {
-    const addedProduct = await Wishes.create({
-        userId, productId
-    });
+    const product = await getProduct(productId);
+    const sellerId = product?.userId
+    //@ts-ignore
+    const addedProduct = await Wishes.create({ userId, productId, sellerId });
     return addedProduct;
 }
 

@@ -39,12 +39,12 @@ export const addToWishes = async (req: Request, res: Response) => {
 };
 
 export const getUserWishes = async (req: Request, res: Response) => {
-  const { user } = req;
+  //@ts-ignore
+  const { id, roleId } = req.user;
   try {
-    //@ts-ignore
-    const wishes = await wishlistService.getAllUserWishes(user.id);
-    if (wishes.length == 0) {
-      return res.status(200).json({
+    const wishes = await wishlistService.getAllUserWishes(id, roleId);
+    if (wishes.length === 0) {
+      return res.status(404).json({
         message: "No wishes found",
       });
     } else {
@@ -64,10 +64,10 @@ export const getProductWishes = async (req: Request, res: Response) => {
   const productId = req.params.id;
   try {
     //@ts-ignore
-    const isOwner = await wishlistService.checkOwnership(Number(productId), req.user.id);
-    if (!isOwner) {
-      return res.status(403).json({
-        message: "you're not allowed to access this",
+    const product = await wishlistService.checkOwnership(Number(productId), req.user.id);
+    if (!product) {
+      return res.status(404).json({
+        message: "Product Not Found",
       });
     }
     const wishes = await wishlistService.getProductWishes(Number(productId));
@@ -96,7 +96,7 @@ export const deleteWish = async (req: Request, res: Response) => {
     const isOwner = await wishlistService.getSingleWish(id, productId);
     if (!isOwner) {
       return res.status(404).json({
-        message: "wish product does not exist",
+        message: "product does not exist in your wishes",
       });
     } else {
       await wishlistService.removeProduct(id, productId);

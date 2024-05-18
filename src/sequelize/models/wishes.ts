@@ -6,6 +6,7 @@ export interface wishAttributes {
   id?: number;
   userId: number;
   productId: number;
+  sellerId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -15,6 +16,7 @@ export interface wishAttributes {
     id!: number | undefined;
     userId!: number;
     productId!: number;
+    sellerId!: number;
     createdAt!: Date | undefined;
     updatedAt!: Date | undefined;
   }
@@ -33,6 +35,10 @@ export interface wishAttributes {
     productId: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    sellerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,
