@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification, changeUserAccountStatus, logout } from "../controllers/userControllers";
+import { fetchAllUsers, createUserController, userLogin, updatePassword, tokenVerification, handleSuccess, handleFailure,updateProfileController, getProfileController, otpVerification, changeUserAccountStatus, logout, sendResetLinkEmail, resetPasswordController } from "../controllers/userControllers";
 import { emailValidation, validateSchema } from "../middlewares/validator";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { passwordUpdateSchema } from "../schemas/passwordUpdate";
@@ -48,5 +48,8 @@ userRoutes.get("/auth/google", authenticateUser);
 userRoutes.get("/auth/google/callback", callbackFn);
 userRoutes.get("/auth/google/success", handleSuccess);
 userRoutes.get("/auth/google/failure", handleFailure);
+userRoutes.post('/password-reset-link', sendResetLinkEmail);
+userRoutes.patch('/reset-password', resetPasswordController);
+
 
 export default userRoutes;
