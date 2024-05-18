@@ -15,5 +15,6 @@ export const env = {
   callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
   remote_url: `${process.env.REMOTE_URL}/api/v1/users/2fa-verify`,
   local_url: `${process.env.LOCAL_URL}:${process.env.PORT}/api/v1/users/2fa-verify`,
-  redis_url: process.env.REDIS_URL as string
+  redis_url: process.env.REDIS_URL as string,
+  client_url: process.env.CLIENT_URL as string,
 };

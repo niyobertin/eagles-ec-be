@@ -8,8 +8,6 @@ export const signUpSchema = Joi.object({
   role: Joi.string().optional(),
 }).options({ allowUnknown: false });
 
-
-
 export const profileSchemas = Joi.object({
     profileImage: Joi.string()
     .optional(),

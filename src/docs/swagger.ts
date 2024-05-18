@@ -16,8 +16,10 @@ import {
   updateUserRole,
   changeUserAccountStatus,
   logUserOut,
+  sendResetLink,
+  updateForgotPassword,
+  verifyUserAccessToken,
 } from "./users";
-import { RoleSchema, getRoles, createRole, updateRole, deleteRole } from "./roledoc";
 import {
   getProducts,
   addProducts,
@@ -29,9 +31,18 @@ import {
   changeProductAvailability,
 } from "./products";
 import { getCategories, addCategories, getSingleCategory, updateCategories, deleteCategories, categorySchema } from "./categories";
+  import {
+    RoleSchema,
+    getRoles,
+    createRole,
+    updateRole,
+    deleteRole
+  } from "./roledoc";
 import { AddToWishes, deleteWish, getWishes, getWishesByProduct, wishSchema } from "./wishes";
 import { joinChats } from "./chats";
 import { addItemToCartDoc, clearAllProductFromCartDoc, removeProductFromCartDoc, updateProductQuantityDoc, viewCartDoc } from "./cart";
+import { getAllNotifications, readNotification } from "./notifications";
+import { homepage } from "./home";
 
 const docRouter = express.Router();
 
@@ -68,6 +79,9 @@ const options = {
   ],
 
   paths: {
+    "/": {
+      get:homepage
+    },
     "/api/v1/users": {
       get: getUsers,
     },
@@ -89,6 +103,17 @@ const options = {
     },
     "/api/v1/users/2fa-verify": {
       post: verifyOTPToken,
+    },
+    "/api/v1/users/password-reset-link": {
+      post: sendResetLink,
+    },
+    "/api/v1/users/reset-password": {
+      patch: updateForgotPassword,
+    },
+
+
+    "/api/v1/users/me": {
+      post: verifyUserAccessToken,
     },
     "/api/v1/roles": {
       get: getRoles,
@@ -143,6 +168,10 @@ const options = {
       put: removeProductFromCartDoc,
       patch: updateProductQuantityDoc,
     },
+    "/api/v1/notifications": {
+      get: getAllNotifications,
+      patch:readNotification,
+    }
   },
   components: {
     schemas: {

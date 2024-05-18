@@ -4,7 +4,7 @@ import { decodeMagicLinkToken, generateMagicLinkToken, generateToken } from "../
 import * as mailService from "../services/mail.service";
 import { IUser, STATUS, SUBJECTS } from "../types";
 import { comparePasswords } from "../utils/comparePassword";
-import { createUserService, getUserByEmail, updateUserPassword,loggedInUser } from "../services/user.service";
+import { createUserService, updateUserPassword,loggedInUser } from "../services/user.service";
 import { hashedPassword } from "../utils/hashPassword";
 import jwt from "jsonwebtoken"
 import User from "../sequelize/models/users";
@@ -14,7 +14,8 @@ import uploadFile from "../utils/handleUpload";
 import { updateUserRoleService } from "../services/user.service";
 import { generateRandomNumber } from "../utils/generateRandomNumber";
 import { env } from "../utils/env";
-import redisClient from "../config/redis";
+import { Emailschema, resetPasswordSchema } from "../schemas/resetPasswordSchema";
+import Joi from "joi";
 
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
@@ -369,3 +370,34 @@ export const logout = async(req:Request,res:Response) =>{
     })
   }
 }
+
+export const sendResetLinkEmail = async (req: Request, res: Response) => {
+  try {
+      const { error } = Emailschema.validate(req.body);
+      if (error) {
+        const cleanErrorMessage = error.details.map(detail => detail.message.replace(/['"]/g, '').trim()).join(', ')
+        return res.status(400).json({ message: cleanErrorMessage });
+      }
+      const { email } = req.body;
+      const result = await userService.sendResetLinkEmail(email);
+      return res.status(200).json(result);
+  } catch (error) {
+      return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const resetPasswordController = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { error } = resetPasswordSchema.validate(req.body);
+    if (error) {
+      const cleanErrorMessage = error.details.map(detail => detail.message.replace(/['"]/g, '').trim()).join(', ');
+      return res.status(400).json({ message: cleanErrorMessage});
+    }
+      const { token, password} = req.body;
+      const result: any = await userService.resetPassword(token, password);
+
+      return res.status(result.status).json({ message: result.message });
+  } catch (error) {
+      return res.status(500).json({ message: 'Internal server error.' });
+  }
+};

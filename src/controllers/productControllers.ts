@@ -11,6 +11,13 @@ import {
     
 } from "../services/product.service";
 import { ProductType } from "../types";
+import { notificationEmitter } from "../utils/server";
+import Notification from "../sequelize/models/Notification";
+import { UserAttributes } from "../sequelize/models/users";
+import * as mailService from "../services/mail.service"
+import { removedProductTemplate } from "../email-templates/removed";
+import { updateProductTemplate } from "../email-templates/updated";
+import { createdProductTemplate } from "../email-templates/created";
 
 export const fetchProducts =  async(req:Request,res:Response) =>{
     try {
@@ -54,7 +61,8 @@ export const fetchSingleProduct = async(req:Request,res:Response) => {
     };
 };
 
-export const addProducts = async(req:Request,res:Response) =>{
+export const addProducts = async (req: Request, res: Response) => {
+    const currentUser:UserAttributes = (req as any).user
     try {
         const uploadedImages = process.env.NODE_ENV === "test"? [
         "file1",
@@ -93,7 +101,21 @@ export const addProducts = async(req:Request,res:Response) =>{
             updatedAt: new Date() 
         };
         const isCreated = await createProducts(product);
-        if(isCreated){
+        if (isCreated) {
+
+            await mailService.sendNotification(currentUser.email, "Product uploaded", createdProductTemplate(currentUser.username, isCreated?.name));
+            
+            const notification = await Notification.create({
+              title: "Product Uploaded",
+              //@ts-ignore
+              message: `Your Product ${isCreated.name} successfully uploaded`,
+              //@ts-ignore
+              userId: currentUser.id || undefined,
+            });
+
+            
+            notificationEmitter.emit("created", notification);
+
             res.status(201).json(
                 {
                     status:201,
@@ -114,10 +136,22 @@ export const addProducts = async(req:Request,res:Response) =>{
     };
 };
 
-export const productsUpdate  = async(req:Request,res:Response) =>{
+export const productsUpdate = async (req: Request, res: Response) => {
+    const currentUser:UserAttributes = (req as any).user
     try {
         const isUpdated:any = await updateProducts(req,res);
-      if(isUpdated){
+        if (isUpdated) {
+          
+            await mailService.sendNotification(currentUser.email,"Product updated",updateProductTemplate(currentUser.username,isUpdated.name))
+            const notification = await Notification.create({
+              title: "Product updated",
+              //@ts-ignore
+              message: `Your Product ${isUpdated.name} successfully updated`,
+              //@ts-ignore
+              userId: currentUser.id || undefined,
+            });
+
+            notificationEmitter.emit("updated", notification);
             res.status(201).json(
                 {
                     status:201,
@@ -139,15 +173,27 @@ export const productsUpdate  = async(req:Request,res:Response) =>{
     }
 }
 
-export const removeProducts = async(req:Request,res:Response) =>{
+export const removeProducts = async (req: Request, res: Response) => {
+    const currentUser:UserAttributes = (req as any).user
     try {
         const isDeleted = await deleteProduct(req,res);
-        if(isDeleted){
-            res.status(200).json(
-                {
-                    status:200,
-                    message:"Product removed"
-                });
+        if (isDeleted) {
+          //@ts-ignore
+          await mailService.sendNotification(currentUser.email, "Product deleted", removedProductTemplate(currentUser.username, isDeleted?.name));
+
+          const notification = await Notification.create({
+            title: "Product Deleted",
+            //@ts-ignore
+            message: `Your Product ${isDeleted.name} successfully deleted`,
+            //@ts-ignore
+            userId: currentUser.id || undefined,
+          });
+
+          notificationEmitter.emit("deleted", notification);
+          res.status(200).json({
+            status: 200,
+            message: "Product removed",
+          });
         }else{
             res.status(404)
             .json({

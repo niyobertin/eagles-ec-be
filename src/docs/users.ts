@@ -286,6 +286,33 @@ export const verifyOTPToken = {
     },
   },
 };
+export const verifyUserAccessToken = {
+  tags: ["Users"],
+  summary: "Verify access token",
+  parameters: [
+    {
+      name: "token",
+      in: "query",
+      required: true,
+      description: "jwt token",
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+
+  responses: {
+    200: {
+      description: "retriev user data ",
+    },
+    401: {
+      description: "Token expired",
+    },
+    500: {
+      description: "Internal server error",
+    },
+  },
+};
 
 export const updateUserRole ={
   tags: ["Users"],
@@ -375,3 +402,82 @@ export const logUserOut = {
   }
 
 }
+
+export const sendResetLink = {
+  tags: ["Users"],
+  summary: "Send reset link",
+  description: "Send a password reset link to the user's email",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              description: "The email address of the user"
+            }
+          },
+          required: ["email"]
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: "Password reset link sent successfully"
+    },
+    400: {
+      description: "Bad request"
+    },
+    500: {
+      description: "Internal server error"
+    }
+  }
+};
+
+export const updateForgotPassword = {
+  tags: ["Users"],
+  summary: "Update forgot password",
+  description: "Update the password using the reset token",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            token: {
+              type: "string",
+              description: "The reset token sent to the user's email"
+            },
+            password: {
+              type: "string",
+              description: "The new password"
+            },
+            confirmPassword: {
+              type: "string",
+              description: "Confirm new password"
+            }
+          },
+          required: ["token", "newPassword", "confirmPassword"]
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: "Password updated successfully"
+    },
+    400: {
+      description: "Invalid or expired token"
+    },
+    404: {
+      description: "User not found"
+    },
+    500: {
+      description: "Internal server error"
+    }
+  }
+};

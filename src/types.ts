@@ -53,3 +53,12 @@ export interface CategoryType{
     category?: string;
     expirationDate?: Date;
   }
+
+
+  export interface IInfo {
+    id: number | undefined;
+    name: string;
+    userId: number;
+    email: undefined;
+    username: undefined;
+  }

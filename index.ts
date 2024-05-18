@@ -2,6 +2,7 @@ import sequelize, { connect } from "./src/config/dbConnection";
 import { env } from "./src/utils/env";
 import app from "./src/utils/server";
 
+
 app.listen(env.port, async () => {
   await connect();
   await sequelize
