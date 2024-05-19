@@ -7,7 +7,7 @@ const notificationRoutes = Router()
 
 
 notificationRoutes.get("/",isLoggedIn,getUserNotifications)
-notificationRoutes.patch("/:id",isLoggedIn,readNotification)
+notificationRoutes.get("/:id",isLoggedIn,readNotification)
 
 
 

@@ -56,7 +56,6 @@ export const findExpiredProduct = () => {
         notificationEmitter.emit("expired", notification);
       });
     } catch (error: any) {
-      console.log("Error during cron job:", error.message);
       throw new Error(error.message);
     }
   });

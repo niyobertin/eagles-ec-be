@@ -80,7 +80,7 @@ const options = {
 
   paths: {
     "/": {
-      get:homepage
+      get: homepage,
     },
     "/api/v1/users": {
       get: getUsers,
@@ -110,7 +110,6 @@ const options = {
     "/api/v1/users/reset-password": {
       patch: updateForgotPassword,
     },
-
 
     "/api/v1/users/me": {
       post: verifyUserAccessToken,
@@ -170,8 +169,10 @@ const options = {
     },
     "/api/v1/notifications": {
       get: getAllNotifications,
-      patch:readNotification,
-    }
+    },
+    "/api/v1/notifications/{id}": {
+      get: readNotification,
+    },
   },
   components: {
     schemas: {
