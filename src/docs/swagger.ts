@@ -18,6 +18,7 @@ import {
   logUserOut,
   sendResetLink,
   updateForgotPassword,
+  verifyUserAccessToken,
 } from "./users";
 import {
   getProducts,
@@ -40,6 +41,8 @@ import { getCategories, addCategories, getSingleCategory, updateCategories, dele
 import { AddToWishes, deleteWish, getWishes, getWishesByProduct, wishSchema } from "./wishes";
 import { joinChats } from "./chats";
 import { addItemToCartDoc, clearAllProductFromCartDoc, removeProductFromCartDoc, updateProductQuantityDoc, viewCartDoc } from "./cart";
+import { getAllNotifications, readNotification } from "./notifications";
+import { homepage } from "./home";
 
 const docRouter = express.Router();
 
@@ -76,6 +79,9 @@ const options = {
   ],
 
   paths: {
+    "/": {
+      get: homepage,
+    },
     "/api/v1/users": {
       get: getUsers,
     },
@@ -105,7 +111,9 @@ const options = {
       patch: updateForgotPassword,
     },
 
-
+    "/api/v1/users/me": {
+      post: verifyUserAccessToken,
+    },
     "/api/v1/roles": {
       get: getRoles,
       post: createRole,
@@ -158,6 +166,12 @@ const options = {
       delete: clearAllProductFromCartDoc,
       put: removeProductFromCartDoc,
       patch: updateProductQuantityDoc,
+    },
+    "/api/v1/notifications": {
+      get: getAllNotifications,
+    },
+    "/api/v1/notifications/{id}": {
+      get: readNotification,
     },
   },
   components: {

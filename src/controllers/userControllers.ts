@@ -84,7 +84,7 @@ export const userLogin = async (req: Request, res: Response) => {
           status: 200,
           message: "Logged in",
           userInfo: userInfo,
-          token: accessToken,
+          token: accessToken
         });
       }
     }

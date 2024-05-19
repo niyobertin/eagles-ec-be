@@ -16,6 +16,7 @@ import { updateUserRole } from "../controllers/userControllers";
 import { roleExist } from "../middlewares/roleExist";
 import { userExist } from "../middlewares/userExist";
 import { isDisabled } from "../middlewares/isDisabled";
+import { verifyToken } from "../middlewares/verifyToken";
  
 
 
@@ -51,5 +52,6 @@ userRoutes.get("/auth/google/failure", handleFailure);
 userRoutes.post('/password-reset-link', sendResetLinkEmail);
 userRoutes.patch('/reset-password', resetPasswordController);
 
+userRoutes.get("/me", verifyToken);
 
 export default userRoutes;

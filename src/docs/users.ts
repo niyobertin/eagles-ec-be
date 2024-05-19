@@ -286,6 +286,33 @@ export const verifyOTPToken = {
     },
   },
 };
+export const verifyUserAccessToken = {
+  tags: ["Users"],
+  summary: "Verify access token",
+  parameters: [
+    {
+      name: "token",
+      in: "query",
+      required: true,
+      description: "jwt token",
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+
+  responses: {
+    200: {
+      description: "retriev user data ",
+    },
+    401: {
+      description: "Token expired",
+    },
+    500: {
+      description: "Internal server error",
+    },
+  },
+};
 
 export const updateUserRole ={
   tags: ["Users"],

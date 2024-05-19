@@ -1,11 +1,17 @@
 import { Server,Socket } from "socket.io";
-import { sendMessages,getPastMessages } from "../controllers/chatsController";
+import { sendMessages, getPastMessages } from "../controllers/chatsController";
+
+
+
  const socket = (io: Server): void => {
     let connectedClients: Set<string> = new Set();
     io.on('connection', async(socket: Socket) => {
         connectedClients.add(socket.id);
         io.emit('connected client', connectedClients.size);
+
+        console.log("connected client")
         await getPastMessages(socket);
+    
 
         socket.on('disconnect', () => {
             io.emit('removed');
