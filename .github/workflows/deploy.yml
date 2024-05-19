@@ -46,6 +46,8 @@ jobs:
           CLOUD_KEY: ${{ secrets.CLOUD_KEY }}
           CLOUD_SECRET: ${{ secrets.CLOUD_SECRET }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          REMOTE_URL: ${{ secrets.REMOTE_URL }}
 
         run: npm run test
 
