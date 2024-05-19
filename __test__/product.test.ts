@@ -275,14 +275,14 @@ test('It should return a list of user wishes', async () => {
 
 test('It should retrieve wishes on a single product', async () => {
   const response = await request(app)
-  .get(`/api/v1/wishes/${productId}`)
+  .get(`/api/v1/products/${productId}/wishes`)
   .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(200)
 })
 
 test('It should remove a product from user wishlist', async () => {
   const response = await request(app)
-  .delete(`/api/v1/wishes/${productId}`)
+  .delete(`/api/v1/products/${productId}/wishes`)
   .set("Authorization", "Bearer " + buyerToken);
   expect(response.status).toBe(200)
 })

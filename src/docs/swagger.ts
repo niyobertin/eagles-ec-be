@@ -145,9 +145,9 @@ const options = {
     "/api/v1/products/{id}/status": {
       patch: changeProductAvailability,
     },
-    "/api/v1/wishes/{id}": {
+    "/api/v1/products/{id}/wishes": {
       get: getWishesByProduct,
-      delete: deleteWish,
+      delete: deleteWish
     },
     "/api/v1/products/search": {
       get: searchProduct,

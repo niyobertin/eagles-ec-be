@@ -6,9 +6,9 @@ import { isAbuyer } from '../middlewares/isAbuyer'
 
 const wishesRouter = express.Router()
 
-wishesRouter.post('/', isLoggedIn, isAbuyer, wishesController.addToWishes)
-wishesRouter.get('/', isLoggedIn, isAbuyer, wishesController.getUserWishes)
-wishesRouter.delete('/:id', isLoggedIn, isAbuyer, wishesController.deleteWish)
-wishesRouter.get('/:id', isLoggedIn, isAseller, wishesController.getProductWishes)
+wishesRouter.post('/wishes', isLoggedIn, isAbuyer, wishesController.addToWishes)
+wishesRouter.get('/wishes', isLoggedIn, wishesController.getUserWishes)
+wishesRouter.delete('/products/:id/wishes', isLoggedIn, isAbuyer, wishesController.deleteWish)
+wishesRouter.get('/products/:id/wishes', isLoggedIn, isAseller, wishesController.getProductWishes)
 
 export default wishesRouter

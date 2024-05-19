@@ -10,7 +10,7 @@ const appROutes = Router();
 appROutes.use("/users", userRoutes);
 appROutes.use("/products", productsRouter);
 appROutes.use("/categories", categoriesRouter);
-appROutes.use("/wishes", wishesRouter);
+appROutes.use("/", wishesRouter);
 appROutes.use("/messages", joinChatRoomRoutes);
 appROutes.use("/carts", cartRoutes);
 export default appROutes;
