@@ -43,6 +43,7 @@ import { joinChats } from "./chats";
 import { addItemToCartDoc, clearAllProductFromCartDoc, removeProductFromCartDoc, updateProductQuantityDoc, viewCartDoc } from "./cart";
 import { getAllNotifications, readNotification } from "./notifications";
 import { homepage } from "./home";
+import { payment } from "./payments";
 
 const docRouter = express.Router();
 
@@ -68,6 +69,7 @@ const options = {
   basePath: "/",
 
   tags: [
+    { name: "Home"},
     { name: "Users", description: "Endpoints related to users" },
     {
       name: "Roles",
@@ -76,6 +78,8 @@ const options = {
     { name: "Products", description: "Endpoints related to products" },
     { name: "Categories", description: "Endpoints related categories" },
     { name: "Wishes", description: "Endpoints related to Wishes" },
+    { name: "Carts", description: "Endpoints related to Cart"},
+    { name: "Payments", description: "Endpoints related to payments" },
   ],
 
   paths: {
@@ -173,6 +177,9 @@ const options = {
     "/api/v1/notifications/{id}": {
       get: readNotification,
     },
+    "/api/v1/payment/checkout": {
+      post: payment
+    }
   },
   components: {
     schemas: {

@@ -17,4 +17,5 @@ export const env = {
   local_url: `${process.env.LOCAL_URL}:${process.env.PORT}/api/v1/users/2fa-verify`,
   redis_url: process.env.REDIS_URL as string,
   client_url: process.env.CLIENT_URL as string,
+  stripe_secret: process.env.STRIPE_SECRET_KEY as string
 };

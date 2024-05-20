@@ -1,3 +1,4 @@
+import { CartAttributes } from "./sequelize/models/Cart";
 import { IRole } from "./sequelize/models/roles";
 export interface IUser {
   id?: number;
@@ -15,6 +16,7 @@ export enum SUBJECTS {
   REQUEST_2FA = "Request for 2FA",
   VERIFY_LOGIN = "Verify that It's you",
   DISABLE_2FA = "Disable 2-Factor Authentication",
+  PAYMENT_CONFIRMATION = "Payment Confirmation"
 }
 
 export enum STATUS {
@@ -61,4 +63,7 @@ export interface CategoryType{
     userId: number;
     email: undefined;
     username: undefined;
+  }
+  export interface CartRequest extends Request {
+    cart: CartAttributes;
   }
