@@ -51,7 +51,7 @@ export const findExpiredProduct = () => {
         //@ts-ignore
         await disableProductVisisbility(info.id);
         //@ts-ignore
-        await mailService.sendNotification(info.email, "Product Expired", expiredProductTemplate(info));
+        await mailService.sendNotification(info.email, "A Product has Expired", expiredProductTemplate(info));
         
         notificationEmitter.emit("expired", notification);
       });
