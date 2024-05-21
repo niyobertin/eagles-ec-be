@@ -10,6 +10,11 @@ import User from "../src/sequelize/models/users";
 import bcrypt from "bcryptjs";
 import { Role } from "../src/sequelize/models/roles";
 import redisClient from "../src/config/redis";
+import { response } from "express";
+import { placeOrder } from "../src/services/payment.service";
+import Cart from "../src/sequelize/models/Cart";
+import CartItem from "../src/sequelize/models/CartItem";
+import OrderItem from "../src/sequelize/models/orderItems";
 
 const userData: any = {
   name: "yvanna",
@@ -82,6 +87,7 @@ describe("Testing product Routes", () => {
   
     afterAll(async () => {
       await Product.destroy({where:{}});
+      await Cart.destroy({where: {}})
       await sequelize.close();
       await redisClient.quit()
     });
@@ -286,8 +292,140 @@ test('It should remove a product from user wishlist', async () => {
   .set("Authorization", "Bearer " + buyerToken);
   expect(response.status).toBe(200)
 })
+let reviewId:any;
+let cart:any;
+test("Buyer should be able to add an item to the cart", async () => {
+  const response = await request(app)
+    .post("/api/v1/carts")
+    .send({
+      productId,
+      quantity: 1,
+    })
+    .set("Authorization", `Bearer ${buyerToken}`);
+  await request(app)
+    .post("/api/v1/carts")
+    .send({
+      productId,
+      quantity: 1,
+    })
+    .set("Authorization", `Bearer ${buyerToken}`);
+  expect(response.status).toBe(201);
+});
 
+test("should return user cart if he has one", async () => {
+  const response = await request(app).get("/api/v1/carts").set("Authorization", `Bearer ${buyerToken}`);
+  expect(response.status).toBe(200);
+  cart = response.body
+});
+
+
+test("it should create an order", async() => {
+  const response = await placeOrder(cart)
+  expect(response?.status).toBe("pending")
+})
+
+test("Buyer should be able to remove an item from the cart", async () => {
+  const response = await request(app)
+    .put("/api/v1/carts")
+    .send({
+      productId: productId,
+    })
+    .set("Authorization", "Bearer " + buyerToken);
+  expect(response.status).toBe(200);
+}); 
+
+test("it should return 201 when review created on products", async() => {
+  const response = await request(app)
+  .post(`/api/v1/products/${productId}/reviews`)
+  .send({
+    rating: 4,
+    feedback: "product is amazing"
+  })
+  .set("Authorization", "Bearer " + buyerToken)
+  expect(response.status).toBe(201)
+})
+
+test("should return 403 and  not allow to reveiw a product twice", async () => {
+  const response = await request(app)
+  .post(`/api/v1/products/${productId}/reviews`)
+  .send({
+    rating: 3,
+    feedback: "awesome products ever seen."
+  })
+  .set("Authorization", "Bearer " + buyerToken)
+  expect(response.status).toBe(403)
+  expect(response.body).toEqual({
+    status: 403,
+    message: "Not allowed to review a product twice."
+  })
+})
+
+test("it should 404 error wrong path", async() => {
+  const response = await request(app)
+  .post(`/api/v1/products/review`)
+  .send({
+    rating: 3,
+    feedback: "awesome products ever seen."
+  })
+  expect(response.status).toBe(404)
+},40000)
+
+test("should return 200 when all products reveiws fetched", async () => {
+  const response = await request(app)
+  .get(`/api/v1/products/${productId}/reviews`)
+  expect(response.status).toBe(200)
+  reviewId = response.body.reviewProduct[0].id
+},40000)
+
+test("should return 201 when update existing review on product", async () => {
+  const response = await request(app)
+  .patch(`/api/v1/products/${productId}/reviews`)
+  .send({
+    id: reviewId,
+    rating: 3,
+    feedback: "awesome products ever seen..."
+  })
+  .set("Authorization", "Bearer " + buyerToken)
+  expect(response.status).toBe(201)
+},40000)
+
+test("it should return 200 when delete a review of the product", async () => {
+  const response = await request(app)
+  .delete(`/api/v1/products/${productId}/reviews`)
+  .send({
+    id: reviewId
+  })
+  .set("Authorization", "Bearer " + buyerToken)
+ expect(response.body.message).toBe("You successfully deleted the review.")
+},40000)
+
+test("it should return 404 when delete a invalid id of review of the product", async () => {
+  const response = await request(app)
+  .delete(`/api/v1/products/${productId}/reviews`)
+  .send({
+    id: 900
+  })
+  .set("Authorization", "Bearer " + buyerToken)
+ expect(response.status).toBe(404)
+},40000)
+
+test("when product not found", async() => {
+  const response = await request(app)
+  .get("/api/v1/products/123/reviews")
+expect(response.status).toBe(200)
+expect(response.body).toEqual({
+  status: 200,
+  message: "No review yet, Be first to review. "
+})
+})
+
+test("Return 500 for handle error", async () => {
+  const response = await request(app)
+  .get("/api/v1/products/review")
+  expect(response.status).toBe(500)
+})
   test('It should return status 200 for removed Product',async() =>{
+    await OrderItem.destroy({where: {productId}})
     const response = await request(app)
     .delete(`/api/v1/products/${productId}`)
     .set("Authorization", "Bearer " + token);
@@ -296,7 +434,7 @@ test('It should remove a product from user wishlist', async () => {
 
   test('It should return status 404 Not found',async() =>{
     const response = await request(app)
-    .get('/api/v1/products/1')
+    .get('/api/v1/products/1999')
     .set("Authorization", "Bearer " + token);
     expect(response.status).toBe(404);
 },20000);
@@ -323,7 +461,7 @@ test('It should return status 200 for removed category',async() =>{
       .get("/api/v1/products/search")
       .send(searchProduct)
       .set("Authorization", "Bearer " + token);
-    expect(response.body.status).toBe(404);
+    expect(response.status).toBe(200);
   });
 
   it("changing product availability without login", async ()=>{
@@ -338,4 +476,5 @@ test('It should return status 200 for removed category',async() =>{
       .set("Authorization", "Bearer " + token);
       expect(response.body.message).toBe('Product not found')      
   })
+  
 });

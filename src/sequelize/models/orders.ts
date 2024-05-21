@@ -6,9 +6,10 @@ import OrderItem from "./orderItems";
 
 export interface OrderAttributes {
   id?: number;
-  buyerId: number;
+  buyerId?: number;
   status?: string;
   deliveryDate: Date;
+  items?: OrderItem[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -19,6 +20,7 @@ class Order extends Model<OrderAttributes> implements OrderAttributes {
   buyerId!: number;
   status!: string;
   deliveryDate!: Date;
+  items!: OrderItem[];
   createdAt!: Date | undefined;
   updatedAt!: Date | undefined;
 }

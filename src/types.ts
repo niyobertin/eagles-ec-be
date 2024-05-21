@@ -67,3 +67,10 @@ export interface CategoryType{
   export interface CartRequest extends Request {
     cart: CartAttributes;
   }
+  export interface ReviewType  {
+   userId : string;
+   productId : number;
+   reviewId: number;
+   rating : number;
+   feedback: string;
+  }

@@ -18,6 +18,8 @@ import * as mailService from "../services/mail.service"
 import { removedProductTemplate } from "../email-templates/removed";
 import { updateProductTemplate } from "../email-templates/updated";
 import { createdProductTemplate } from "../email-templates/created";
+import { createReview,  deleteReview,  getProductReviews, updateReview } from "../services/product.service";
+import Review from "../sequelize/models/reviews";
 
 export const fetchProducts =  async(req:Request,res:Response) =>{
     try {
@@ -204,7 +206,7 @@ export const removeProducts = async (req: Request, res: Response) => {
     } catch (error:any) {
         res.status(500).json({
             status:500,
-            error: error.message,
+            message: error.message,
           }); 
     }
 }
@@ -231,3 +233,122 @@ export const productAvailability = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getreviewController = async(req: Request, res: Response) => {
+    try {
+       const productId =   req.params.pid
+       const reviewProduct = await getProductReviews(productId)
+       if (reviewProduct.length === 0) {
+        return res.status(200)
+         .json({
+            status: 200,
+            message: "No review yet, Be first to review. "
+         })
+       }
+       return res.status(200).json({
+        status: 200,
+        message: "review retrieve successfully",
+        reviewProduct
+       })
+    } catch (error: any) {
+       res.status(500).json(
+        error.message
+       ) 
+    }
+}
+
+export const addReviewController = async(req: Request, res: Response) => {
+   try {
+      const reviewObj:any = {
+         // @ts-ignore
+         userId : req.user.id,
+         productId : req.params.pid,
+         rating : req.body.rating,
+         feedback: req.body.feedback
+      }   
+      await createReview(reviewObj)
+      return res.status(201)
+      .json({
+         status: 201,
+         message: "you have successfully create a review!"
+      })
+      
+   } catch (error: any) {
+      if (error.message === "Can't review a product twice.") {
+        return res.status(403).json({
+          status: 403,
+          message: "Not allowed to review a product twice."
+        });
+      }
+      
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error.",
+        error: error.message
+      });
+    }
+}
+
+export const deleteReviewController = async (req: Request, res: Response) => {
+   try {
+      const reviewData:any ={
+         //@ts-ignore
+         userId: req.user.id,
+         reviewId: req.body.id
+      }
+   
+       await deleteReview(reviewData)
+      return res.status(200).
+      json({
+        status: 200,
+         message: "You successfully deleted the review."
+      })
+
+   } catch (error:any) {
+      if (error.message === "Review not found!") {
+         return res.status(404).
+         json({
+            status: 404,
+            message: "Review not found, please try again."
+         })
+      }
+      return res.status(500).
+      json({
+         status: 500,
+         message:error.message
+      })
+   }
+}
+
+export const updateReviewController = async (req: Request, res: Response) => {
+   try {
+
+      const updateObj:any = {
+        //@ts-ignore
+      userId: req.user.id,
+      productId: req.params.pid,
+      reviewId: req.body.id,
+      rating: req.body.rating,
+      feedback: req.body.feedback
+     }
+      await updateReview(updateObj)
+      return res.status(201).
+      json({
+         status: 201,
+         message: "You successfully updated your review.",
+      })
+   } catch (error:any) {
+      if (error.message === "Review not found") {
+         return res.status(404).
+         json({
+            status: 404,
+            message: "Can't update review not found"
+         })
+      }
+      return res.status(500).
+       json({
+         status: 500,
+         error: error.message
+       })
+   }
+}

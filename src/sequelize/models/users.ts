@@ -4,6 +4,7 @@ import Profile from './profiles';
 import {Role} from './roles'; 
 import Wishes from './wishes';
 import Product from './products';
+import Review from './reviews';
 
 export interface UserAttributes {
   id?: number;
@@ -119,5 +120,14 @@ Product.belongsTo(User,{
     foreignKey: 'categoryID'
 });
 
+User.hasMany(Review,  {
+  foreignKey: "userId",
+  as: "review"
+})
+
+Review.belongsTo(User,  {
+  foreignKey: "userId",
+  as: "user"
+})
 
 export default User;
