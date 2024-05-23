@@ -8,6 +8,8 @@ import User from "../src/sequelize/models/users";
 import bcrypt from "bcrypt";
 import { Role } from "../src/sequelize/models/roles";
 import { dummy } from "./prod";
+import * as userServices from "../src/services/user.service"
+import { number } from "joi";
 
 const queryInterface = sequelize.getQueryInterface();
 
@@ -86,7 +88,8 @@ describe("testing cart", () => {
     // console.log("response 3--->", res3);
 
     sellerToken = res3.body.token;
-    sellerId = res3.body.userInfo?.id;
+    const seller = await userServices.getUserByEmail("seller123@example.com");
+     const sellerId = seller?.id;
 
     await request(app)
       .patch(`/api/v1/users/${sellerId}/role`)

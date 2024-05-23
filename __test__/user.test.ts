@@ -217,7 +217,8 @@ describe("Testing user Routes", () => {
       password: dummySeller.password,
     });
     expect(logDummySeller.status).toBe(200);
-    const dummySellerId = logDummySeller.body.userInfo.id;
+    const seller = await userServices.getUserByEmail(dummySeller.email);
+    const dummySellerId = seller?.id;
 
     const response = await request(app)
       .patch(`/api/v1/users/${dummySellerId}/role`)
