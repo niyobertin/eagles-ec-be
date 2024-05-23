@@ -29,7 +29,7 @@ export const callbackFn = passport.authenticate("google", {
 export const getAllUsers = async () => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'name', 'username', 'email', 'roleId', 'createdAt', 'updatedAt','isActive'],
+      attributes: ['id', 'name', 'username', 'email','lastPasswordUpdateTime', 'roleId', 'createdAt', 'updatedAt','isActive'],
     });
     if (users.length === 0) {
       console.log("no user");
@@ -52,7 +52,8 @@ export const loggedInUser = async (email: string) => {
     throw new Error(err.message);
   }
 };
-export const createUserService = async (name: string, email: string, username: string, password: string): Promise<User | null> => {
+ //changes
+export const createUserService = async (name: string, email: string, username: string, password: string,lastPasswordUpdateTime:Date): Promise<User | null> => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     return null;
@@ -67,6 +68,8 @@ export const createUserService = async (name: string, email: string, username: s
       name,
       email,
       username,
+      //changes
+      lastPasswordUpdateTime,
       password: hashPassword,
     });
     await Profile.create({ 
@@ -110,8 +113,8 @@ export const findUserById = async (id: string) => {
     throw new Error(error.message);
   }
 };
-export const updateUserPassword = async (user: User, password: string) => {
-  const update = await User.update({ password: password}, { where: { id: user.id}})
+export const updateUserPassword = async (user: User, password: string, lastPasswordUpdateTime: Date) => {
+  const update = await User.update({ password: password,lastPasswordUpdateTime: lastPasswordUpdateTime}, { where: { id: user.id}})
   return update
 };
 

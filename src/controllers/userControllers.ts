@@ -15,7 +15,8 @@ import { updateUserRoleService } from "../services/user.service";
 import { generateRandomNumber } from "../utils/generateRandomNumber";
 import { env } from "../utils/env";
 import { Emailschema, resetPasswordSchema } from "../schemas/resetPasswordSchema";
-import Joi from "joi";
+import { clearExpiredUserData } from "../jobs/isPasswordExpired";
+import { use } from "passport";
 
 
 export const fetchAllUsers = async (req: Request, res: Response) => {
@@ -95,8 +96,9 @@ export const createUserController = async (req: Request, res: Response) => {
   const { name, email, username, password, role } = req.body;
 
   try {
+    let currentUpdateTime = new Date();
     const { name, email, username, password } = req.body;
-    const user = await createUserService(name, email, username, password);
+    const user = await createUserService(name, email, username, password,currentUpdateTime);
     if (!user || user == null) {
       return res.status(409).json({
         status: 409,
@@ -136,9 +138,12 @@ export const updatePassword = async (req: Request, res: Response) => {
     }
 
     const password = await hashedPassword(newPassword);
+    const currentUpdateTime = new Date();
     // @ts-ignore
-    const update = await updateUserPassword(user, password);
+    const update = await updateUserPassword(user, password,currentUpdateTime);
     if(update){
+      //@ts-ignore
+      clearExpiredUserData(user.id)
       return res.status(200).json({ message: "Password updated successfully" });
     }
   } catch (err: any) {

@@ -17,33 +17,29 @@ import { roleExist } from "../middlewares/roleExist";
 import { userExist } from "../middlewares/userExist";
 import { isDisabled } from "../middlewares/isDisabled";
 import { verifyToken } from "../middlewares/verifyToken";
- 
-
-
+import { isPasswordOutOfDate } from "../middlewares/isPasswordOutOfDate";
 const userRoutes = Router();
 
 userRoutes.get("/", fetchAllUsers);
-userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword)
+userRoutes.put("/passwordupdate", isLoggedIn,validateSchema(passwordUpdateSchema), updatePassword)
 userRoutes.post("/login", emailValidation,validateSchema(logInSchema),isDisabled,userLogin);
-userRoutes.post("/register", emailValidation, validateSchema(signUpSchema), createUserController);
-userRoutes.put("/passwordupdate", isLoggedIn, validateSchema(passwordUpdateSchema), updatePassword);
+userRoutes.post("/register", emailValidation,validateSchema(signUpSchema), createUserController);
 userRoutes.get("/2fa-verify/:token",tokenVerification);
 userRoutes.post("/2fa-verify",otpVerification);
 userRoutes.get('/profile',
- isLoggedIn, 
+ isLoggedIn, isPasswordOutOfDate,
  getProfileController
 );
 userRoutes.post('/logout', isLoggedIn, logout);
 userRoutes.patch('/profile',
- isLoggedIn, 
+ isLoggedIn,isPasswordOutOfDate, 
  upload.single('profileImage'),
  validateSchema(profileSchemas),
  isUploadedFileImage,
  updateProfileController
-)
-
-userRoutes.patch("/:id/role",isLoggedIn, isAdmin, validateSchema(roleUpdateSchema), userExist, roleExist, updateUserRole)
-userRoutes.patch('/:userId/status',isLoggedIn, isAdmin, changeUserAccountStatus);
+);
+userRoutes.patch("/:id/role",isLoggedIn,isPasswordOutOfDate, isAdmin, validateSchema(roleUpdateSchema), userExist, roleExist, updateUserRole)
+userRoutes.patch('/:userId/status',isLoggedIn,isPasswordOutOfDate, isAdmin, changeUserAccountStatus);
 
 userRoutes.get("/auth/google", authenticateUser);
 userRoutes.get("/auth/google/callback", callbackFn);

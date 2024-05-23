@@ -4,12 +4,13 @@ import { isLoggedIn } from '../middlewares/isLoggedIn';
 import{isAdmin} from '../middlewares/isAdmin';
 import { validateSchema } from '../middlewares/validator';
 import {roleSchema} from '../schemas/roleSchema';
+import { isPasswordOutOfDate } from '../middlewares/isPasswordOutOfDate';
 
 const RoleRouter = express.Router();
 
-RoleRouter.post('/', isLoggedIn, isAdmin, validateSchema(roleSchema), roleController.createRole);
-RoleRouter.get('/', roleController.getRoles);
-RoleRouter.patch('/:id', isLoggedIn, isAdmin, validateSchema(roleSchema),roleController.updateRole);
-RoleRouter.delete('/:id', isLoggedIn, isAdmin, roleController.deleteRole);
+RoleRouter.post('/', isLoggedIn,isPasswordOutOfDate, isAdmin, validateSchema(roleSchema), roleController.createRole);
+RoleRouter.get('/',roleController.getRoles);
+RoleRouter.patch('/:id', isLoggedIn,isPasswordOutOfDate, isAdmin, validateSchema(roleSchema),roleController.updateRole);
+RoleRouter.delete('/:id', isLoggedIn,isPasswordOutOfDate, isAdmin, roleController.deleteRole);
 
 export default RoleRouter;

@@ -5,6 +5,7 @@ export const signUpSchema = Joi.object({
   username: Joi.string().min(4).required(),
   email: Joi.string().min(6).required().email(),
   password: Joi.string().min(6).max(20).required(),
+  lastPasswordUpdateTime:Joi.date(),
   role: Joi.string().optional(),
 }).options({ allowUnknown: false });
 

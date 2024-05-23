@@ -422,6 +422,7 @@ expect(response.body).toEqual({
 test("Return 500 for handle error", async () => {
   const response = await request(app)
   .get("/api/v1/products/review")
+  .set("Authorization", "Bearer " + token);
   expect(response.status).toBe(500)
 })
   test('It should return status 200 for removed Product',async() =>{
@@ -453,7 +454,8 @@ test('It should return status 200 for removed category',async() =>{
     expect(response.status).toBe(200);
   });
   test("return status 200 when none seller role search products", async () => {
-    const response = await request(app).get("/api/v1/products/search").send(searchProduct);
+    const response = await request(app).get("/api/v1/products/search").send(searchProduct)
+    .set("Authorization", "Bearer " + buyerToken);
     expect(response.status).toBe(200);
   });
   test("it should return status product is not available when searching product", async () => {

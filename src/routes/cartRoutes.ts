@@ -4,14 +4,14 @@ import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { isQuantityValid } from "../middlewares/isQuantityValid";
 import { isProductFound } from "../middlewares/isProductFound";
 import { validateCart, validateRemoveProductQty, validateUpdateProductQty } from "../middlewares/cartValidation";
+import { isPasswordOutOfDate } from "../middlewares/isPasswordOutOfDate";
 
 const cartRoutes = Router();
 
-cartRoutes.get("/",isLoggedIn,viewUserCart);
-cartRoutes.post("/",isLoggedIn,validateCart, isQuantityValid, addItemToCart);
-// cartRoutes.post("/",isLoggedIn,validateCart, isQuantityValid, addItemToCart);
-cartRoutes.put("/",isLoggedIn,validateRemoveProductQty, isProductFound,removeProductFromCart);
-cartRoutes.delete("/",isLoggedIn, clearAllProductFromCart);
-cartRoutes.patch("/",isLoggedIn,validateUpdateProductQty, isProductFound, updateProductQuantity);
+cartRoutes.get("/",isLoggedIn,isPasswordOutOfDate,viewUserCart);
+cartRoutes.post("/",isLoggedIn,isPasswordOutOfDate,validateCart, isQuantityValid, addItemToCart);
+cartRoutes.put("/",isLoggedIn,isPasswordOutOfDate,validateRemoveProductQty, isProductFound,removeProductFromCart);
+cartRoutes.delete("/",isLoggedIn,isPasswordOutOfDate, clearAllProductFromCart);
+cartRoutes.patch("/",isLoggedIn,isPasswordOutOfDate,validateUpdateProductQty, isProductFound, updateProductQuantity);
 
 export default cartRoutes;

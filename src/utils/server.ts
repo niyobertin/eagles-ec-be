@@ -5,6 +5,7 @@ import { createServer, Server as HTTPServer } from "http";
 import path from "path";
 import { Server as SocketIOServer } from "socket.io";
 import socket from "../config/socketCofing";
+import { isPasswordExpired } from "../jobs/isPasswordExpired";
 
 import appROutes from "../routes";
 import homeRoute from "../routes/homeRoutes";
@@ -55,7 +56,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api/v1/chats", express.static(path.join(__dirname, "../../public")));
+app.use("/api/v1/chats", express.static(path.join(__dirname, '../../public')));
 
 app.use("/", homeRoute);
 app.use("/api/v1", appROutes);
@@ -65,4 +66,5 @@ app.use("/api/v1/roles", RoleRouter);
 socket(io);
 findExpiredProduct()
 
+isPasswordExpired();
 export default server;
