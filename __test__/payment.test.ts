@@ -8,11 +8,12 @@ import User from "../src/sequelize/models/users";
 import bcrypt from "bcryptjs";
 import { Role } from "../src/sequelize/models/roles";
 import { dummy } from "./prod";
+import * as userServive from "../src/services/user.service"
 
 let buyerToken: any;
 let adminToken: any;
 let sellerToken: any;
-let sellerId: number;
+
 
 describe("test stripe api payment", () => {
   beforeAll(async () => {
@@ -79,8 +80,11 @@ describe("test stripe api payment", () => {
       email: "seller123@example.com",
       password: "password",
     });
+
+    const seller = await userServive.getUserByEmail("seller123@example.com");
     sellerToken = sellerResponse.body.token;
-    sellerId = sellerResponse.body.userInfo?.id;
+
+    let sellerId = seller?.id;
 
     await request(app)
       .patch(`/api/v1/users/${sellerId}/role`)

@@ -15,6 +15,7 @@ import { placeOrder } from "../src/services/payment.service";
 import Cart from "../src/sequelize/models/Cart";
 import CartItem from "../src/sequelize/models/CartItem";
 import OrderItem from "../src/sequelize/models/orderItems";
+import * as userService from "../src/services/user.service"
 
 const userData: any = {
   name: "yvanna",
@@ -137,7 +138,9 @@ describe("Testing product Routes", () => {
         });
         expect(logDummySeller.status).toBe(200);
         token = logDummySeller.body.token;
-        const dummySellerId = logDummySeller.body.userInfo.id;
+
+        const seller = await userService.getUserByEmail(dummySeller.email)
+        const dummySellerId = seller?.id;
     
         const response = await request(app)
           .patch(`/api/v1/users/${dummySellerId}/role`)
