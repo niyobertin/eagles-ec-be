@@ -79,6 +79,7 @@
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/socket.io": "^3.0.2",
+    "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",

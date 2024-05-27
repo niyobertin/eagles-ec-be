@@ -45,6 +45,7 @@ import { getAllNotifications, readNotification } from "./notifications";
 import { homepage } from "./home";
 import { payment } from "./payments";
 import { createReviewProduct, deleteReview, getReviewProduct, reviewSchema, updateReviewProduct } from "./reviews";
+import { getAdProducts } from "./products";
 
 const docRouter = express.Router();
 
@@ -141,6 +142,9 @@ const options = {
       get: getSingleProducts,
       patch: updateProducts,
       delete: deleteProducts,
+    },
+    "/api/v1/products/ads": {
+      get: getAdProducts
     },
     "/api/v1/categories": {
       get: getCategories,

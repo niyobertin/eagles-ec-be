@@ -268,3 +268,33 @@ export const getProducts = {
       }
     }
   };
+
+  export const getAdProducts = {
+    tags: ["Products"],
+    security: [{ bearerAuth: [] }],
+    summary: "Fetch ads from aliexpress",
+    description: "This endpoint fetches advertisements based on a query parameter. If no query is provided, it defaults to 'electronics'.",
+    parameters: [
+      {
+        name: "query",
+        in: "query",
+        required: false,
+        description: "The search query for fetching ads.",
+        schema: {
+          type: "string",
+          example: "Electronics"
+        }
+      }
+    ],
+    responses: {
+      200: {
+        description: "Success",
+      },
+      404: {
+        description: "Not Found",
+      },
+      500: {
+        description: "Internal Server Error",
+      }
+    }
+  }

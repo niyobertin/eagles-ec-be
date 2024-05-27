@@ -10,9 +10,11 @@ import { addReviewController, deleteReviewController, getreviewController, updat
 import { addReviewValidate, updateReviewValidate } from "../schemas/review";
 import { hasPurchasedProduct } from "../middlewares/hasPurchased";
 import { isPasswordOutOfDate } from "../middlewares/isPasswordOutOfDate";
+import { getAds } from "../controllers/adsController";
 
 const productsRouter = Router();
 productsRouter.get("/search",isPasswordOutOfDate, searchProductController)
+productsRouter.get('/ads', getAds);
 
 productsRouter.get("/",isLoggedIn,isPasswordOutOfDate,fetchProducts);
 productsRouter.get("/:id",isLoggedIn,isPasswordOutOfDate,fetchSingleProduct);

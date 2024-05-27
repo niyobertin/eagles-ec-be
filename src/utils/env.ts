@@ -18,5 +18,6 @@ export const env = {
   redis_url: process.env.REDIS_URL as string,
   client_url: process.env.CLIENT_URL as string,
   stripe_secret: process.env.STRIPE_SECRET_KEY as string,
-  password_expiration_time: process.env.TIME_FOR_PASSWORD_EXPIRATION as string
+  password_expiration_time: process.env.TIME_FOR_PASSWORD_EXPIRATION as string,
+  ADS_URL: process.env.ADS_URL as String
 };
