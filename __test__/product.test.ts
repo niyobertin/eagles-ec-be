@@ -17,6 +17,11 @@ import CartItem from "../src/sequelize/models/CartItem";
 import OrderItem from "../src/sequelize/models/orderItems";
 import * as userService from "../src/services/user.service"
 
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
+
 const userData: any = {
   name: "yvanna",
   username: "testuser",

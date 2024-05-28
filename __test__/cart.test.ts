@@ -11,6 +11,11 @@ import { dummy } from "./prod";
 import * as userServices from "../src/services/user.service"
 import { number } from "joi";
 
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
+
 const queryInterface = sequelize.getQueryInterface();
 
 let sellerToken: any;

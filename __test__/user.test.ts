@@ -18,7 +18,12 @@ import Redis from "ioredis";
 import { env } from "../src/utils/env";
 import { generateResetToken } from "../src/utils/generateResetToken";
 
-let redisClient:any;
+let redisClient: any;
+
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
 
 
 const userData: any = {
@@ -32,7 +37,7 @@ const userData: any = {
 const dummySeller = {
   name: "dummy1234",
   username: "username1234",
-  email: "soleilcyber00@gmail.com",
+  email: "srukundo01@gmail.com",
   password: "1234567890",
   lastPasswordUpdateTime: "3000, 11, 18"
 };
@@ -233,15 +238,21 @@ describe("Testing user Routes", () => {
     
   });
 
-  test("Should send otp verification code", async () => {
+    test("Should send otp verification code", async () => {
+    jest.unmock("../src/services/mail.service");
+    const originalMailService = jest.requireActual("../src/services/mail.service");
     const spy = jest.spyOn(mailServices, "sendEmailService");
     const response = await request(app).post("/api/v1/users/login").send({
       email: dummySeller.email,
       password: dummySeller.password,
     });
 
-    expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
-    // expect(spy).toHaveBeenCalled();
+      expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
+      expect(spy).toHaveBeenCalled()
+    jest.mock("../src/services/mail.service", () => ({
+      sendEmailService: jest.fn(),
+      sendNotification: jest.fn(),
+    }));
   }, 70000);
 
   test("should log a user in to retrieve a token", async () => {

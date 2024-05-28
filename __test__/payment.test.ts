@@ -15,6 +15,12 @@ let adminToken: any;
 let sellerToken: any;
 
 
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
+
+
 describe("test stripe api payment", () => {
   beforeAll(async () => {
     try {
