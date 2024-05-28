@@ -16,9 +16,14 @@ import { QueryTypes } from "sequelize";
 // import redisClient from "../src/config/redis";
 import Redis from "ioredis";
 import { env } from "../src/utils/env";
-import { generateResetToken } from "../src/utils/generateResetToken";
+import { generateResetToken, generateVerificationToken } from "../src/utils/generateResetToken";
 
-let redisClient:any;
+let redisClient: any;
+
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
 
 
 const userData: any = {
@@ -32,12 +37,13 @@ const userData: any = {
 const dummySeller = {
   name: "dummy1234",
   username: "username1234",
-  email: "soleilcyber00@gmail.com",
+  email: "srukundo01@gmail.com",
   password: "1234567890",
   lastPasswordUpdateTime: "3000, 11, 18"
 };
 const userTestData = {
   newPassword: "Test@123",
+  isVerified:true,
   confirmPassword: "Test@123",
   wrongPassword: "Test456",
 };
@@ -109,6 +115,14 @@ describe("Testing user Routes", () => {
       expect(response.status).toBe(201);
     }, 20000);
 
+    it("It should verify user account.",async()=>{
+      const token = generateVerificationToken(userData.email, 60);
+      const response = await request(app)
+                      .get(`/api/v1/users/verify-user?token=${token}`)
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe('User verified successfully.')
+    },60000)
+
 
     test("should return 409 when registering with an existing email", async () => {
       User.create(userData);
@@ -138,6 +152,7 @@ describe("Testing user Routes", () => {
         password: userData.password,
       });
       expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Logged in");
       token = response.body.token;
     });
     
@@ -204,14 +219,28 @@ describe("Testing user Routes", () => {
     expect(response.body.status).toBe(401);
     spyonOne.mockRestore();
   }, 20000);
+  it("It should verify user account.",async()=>{
+    const token = generateVerificationToken('admin1@example.com', 60);
+    const response = await request(app)
+                    .get(`/api/v1/users/verify-user?token=${token}`)
+          expect(response.status).toBe(200)
+          expect(response.body.message).toBe('User verified successfully.')
+  },60000)
 
   test("should login an Admin", async () =>{
     const response = await request(app).post("/api/v1/users/login").send({
       email: "admin1@example.com",
-        password: "password"
+      password: "password"
   })
   adminToken = response.body.token;
 });
+    it("It should verify user account.",async()=>{
+      const token = generateVerificationToken(dummySeller.email, 60);
+      const response = await request(app)
+                      .get(`/api/v1/users/verify-user?token=${token}`)
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe('User verified successfully.')
+    },60000)
   
   test("should update dummyseller's role to seller", async () => {
     const logDummySeller = await request(app).post("/api/v1/users/login").send({
@@ -219,6 +248,7 @@ describe("Testing user Routes", () => {
       password: dummySeller.password,
     });
     expect(logDummySeller.status).toBe(200);
+    expect(logDummySeller.body.message).toBe("Logged in");
     const seller = await userServices.getUserByEmail(dummySeller.email);
     const dummySellerId = seller?.id;
 
@@ -230,18 +260,25 @@ describe("Testing user Routes", () => {
       .set("Authorization", "Bearer " + adminToken);
     
     expect(response.status).toBe(200);
+    // expect(response.body.message).toBe('User role updated successfully');
     
   });
 
-  test("Should send otp verification code", async () => {
+    test("Should send otp verification code", async () => {
+    jest.unmock("../src/services/mail.service");
+    const originalMailService = jest.requireActual("../src/services/mail.service");
     const spy = jest.spyOn(mailServices, "sendEmailService");
     const response = await request(app).post("/api/v1/users/login").send({
       email: dummySeller.email,
       password: dummySeller.password,
     });
 
-    expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
-    // expect(spy).toHaveBeenCalled();
+      expect(response.body.message).toBe("OTP verification code has been sent ,please use it to verify that it was you");
+      expect(spy).toHaveBeenCalled()
+    jest.mock("../src/services/mail.service", () => ({
+      sendEmailService: jest.fn(),
+      sendNotification: jest.fn(),
+    }));
   }, 70000);
 
   test("should log a user in to retrieve a token", async () => {
@@ -551,6 +588,28 @@ describe('Patch /api/v1/users/reset-password', () => {
       expect(response.status).toBe(400);
   },60000);
 });
+
+describe("Verifying user account",()=>{
+  it("It should verify user account.",async()=>{
+    await User.create(userData)
+    const token = generateVerificationToken(userData.email, 60);
+    const response = await request(app)
+                    .get(`/api/v1/users/verify-user?token=${token}`)
+          expect(response.status).toBe(200)
+          expect(response.body.message).toBe('User verified successfully.')
+  },60000)
+
+  it("It should send a verification link.",async()=>{
+    const response = await request(app)
+                    .post('/api/v1/users/verify-user-email')
+                    .send({
+                      email:userData.email
+                    })
+          expect(response.status).toBe(409)
+          expect(response.body.message).toBe("User is already verified.")
+  },60000)
+
+})
 
 afterAll(async () => {
   try {

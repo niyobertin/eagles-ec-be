@@ -481,3 +481,39 @@ export const updateForgotPassword = {
     }
   }
 };
+export const verifyUserEmail = {
+  tags: ["Users"],
+  summary: "Verify user email",
+  description: "Verify user email using the provided email address",
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              description: "The user's email address"
+            }
+          },
+          required: ["email"]
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: "Verification email sent successfully"
+    },
+    400: {
+      description: "Invalid email address"
+    },
+    404: {
+      description: "User not found"
+    },
+    500: {
+      description: "Internal server error"
+    }
+  }
+};

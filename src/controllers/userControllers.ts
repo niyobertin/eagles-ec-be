@@ -106,7 +106,7 @@ export const createUserController = async (req: Request, res: Response) => {
     }
     return res.status(201).json({
       status: 201,
-      message: "User successfully created."
+      message: "User successfully created. check your inbox to verify your email"
     });
   } catch (err: any) {
     if (err.name === "UnauthorizedError" && err.message === "User already exists") {
@@ -194,6 +194,7 @@ export const handleSuccess = async (req: Request, res: Response) => {
         name: user.displayName,
         email: user.emails[0].value,
         username: user.name.familyName,
+        isVerified:true,
         //@ts-ignore
         password: null
       });
@@ -403,5 +404,32 @@ export const resetPasswordController = async (req: Request, res: Response): Prom
       return res.status(result.status).json({ message: result.message });
   } catch (error) {
       return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const verifyUserEmailController = async (req: Request, res: Response) => {
+  try {
+    // Extract email from the request body
+    const {email} = req.body;
+
+    const { error } = Emailschema.validate(req.body);
+    if (error) {
+      const cleanErrorMessage = error.details.map(detail => detail.message.replace(/['"]/g, '').trim()).join(', ')
+      return res.status(400).json({ message: cleanErrorMessage });
+    }
+    const result = await userService.verifyUserEmail(email);
+    res.status(result.status).json({ message: result.message });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send verification email.' });
+  }
+};
+export const verifyUserController = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Extract token from the request query
+    const token = req.query.token as string;
+    const result = await userService.verifyNewUser(token);
+    res.status(result.status).json({ message: result.message });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to verify new user.' });
   }
 };

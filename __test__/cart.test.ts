@@ -11,6 +11,11 @@ import { dummy } from "./prod";
 import * as userServices from "../src/services/user.service"
 import { number } from "joi";
 
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
+
 const queryInterface = sequelize.getQueryInterface();
 
 let sellerToken: any;
@@ -28,6 +33,7 @@ describe("testing cart", () => {
         name: "admin123",
         username: "admin123",
         email: "admin1@example.com",
+        isVerified:true,
         password: await bcrypt.hash("password", 10),
         roleId: 3,
       };
@@ -35,12 +41,14 @@ describe("testing cart", () => {
       const testBuyer = {
         name: "buyer123",
         username: "buyer123",
+        isVerified:true,
         email: "buyer1@example.com",
         password: await bcrypt.hash("password", 10),
       };
       const testSeller = {
         name: "seller123",
         username: "seller123",
+        isVerified:true,
         email: "seller123@example.com",
         password: await bcrypt.hash("password", 10),
       };

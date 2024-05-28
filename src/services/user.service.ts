@@ -10,10 +10,13 @@ import userRoutes from "../routes/userRoutes";
 import sequelize from "../config/dbConnection";
 import { activationTemplate } from "../email-templates/activation";
 import redisClient from "../config/redis";
-import { generateResetToken, verifyResetToken } from "../utils/generateResetToken";
+import { generateResetToken, generateVerificationToken, verifyResetToken } from "../utils/generateResetToken";
 import { env } from "../utils/env";
 import { generatePasswordResetEmail } from "../email-templates/generatePasswordResetEmail";
 import { generatePasswordUpdateEmailContent } from "../email-templates/generatePasswordUpdateEmailContent";
+import verifyUserEmailTemplate, { generateEmailVerificationEmail } from "../email-templates/verifyUser";
+import { generateToken } from "../utils/jsonwebtoken";
+import { IUser } from "../types";
 
 
 
@@ -88,6 +91,13 @@ export const createUserService = async (name: string, email: string, username: s
       postalCode:"",
       country: "",
      });
+
+     const subject = 'Please verify your email address';
+     const token = generateVerificationToken(user.email, 60);
+     const verificationLink = `${process.env.REMOTE_URL || `${process.env.LOCAL_URL}:${process.env.PORT}`}/api/v1/users/verify-user?token=${token}`;
+      
+     await sendEmailService(user,subject,verifyUserEmailTemplate(user.username,verificationLink))
+     
     return user;
   }
  
@@ -260,3 +270,48 @@ export const resetPassword = async (token: string, newPassword: string): Promise
   }
 };
 
+export const verifyNewUser = async (token: string) => {
+ 
+  try {
+    const decodedToken = verifyResetToken(token);
+    const isBlacklisted = await isTokenBlacklisted(token);
+    if (!decodedToken || isBlacklisted) {
+      return { status: 400, message: 'Invalid token.' };
+    }
+    const user:any = {
+      email:decodedToken.email
+    }
+    const subject = `Email Verification Confirmation`;
+    const [updatedRows] = await User.update({ isVerified: true }, { where: { email: decodedToken.email } });
+    await addToBlacklist(token);
+    if (updatedRows > 0) {
+      await sendEmailService(user,subject,generateEmailVerificationEmail(decodedToken.email))
+      return { status: 200, message: 'User verified successfully.' };
+    } else {
+      return { status: 404, message: 'User not found or already verified.' };
+    }
+  } catch (error) {
+    throw new Error('Failed to verify user.');
+  }
+};
+export const verifyUserEmail = async (email: string) => {
+  try {
+    const user = await User.findOne({ where: { email} });
+    if(user?.isVerified === true){
+      return { status: 409, message: 'User is already verified.' };
+
+    }
+    if (!user) {
+      return { status: 404, message: 'User not found.' };
+    }
+    const subject = 'Please verify your email address';
+    const token = generateVerificationToken(email, 60);
+    const verificationLink = `${process.env.REMOTE_URL || `${process.env.LOCAL_URL}:${process.env.PORT}`}/api/v1/users/verify-user?token=${token}`;
+      
+     await sendEmailService(user,subject,verifyUserEmailTemplate(user.username,verificationLink))
+
+     return { status: 201, message: 'Verification email sent successfully.' };
+  } catch (error) {
+    throw new Error('Failed to verify user.');
+  }
+};

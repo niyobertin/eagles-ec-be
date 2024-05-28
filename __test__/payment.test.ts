@@ -15,6 +15,12 @@ let adminToken: any;
 let sellerToken: any;
 
 
+jest.mock("../src/services/mail.service", () => ({
+  sendEmailService: jest.fn(),
+  sendNotification: jest.fn(),
+}));
+
+
 describe("test stripe api payment", () => {
   beforeAll(async () => {
     try {
@@ -23,6 +29,7 @@ describe("test stripe api payment", () => {
       const testAdmin = {
         name: "admin123",
         username: "admin123",
+        isVerified:true,
         email: "admin1@example.com",
         password: await bcrypt.hash("password", 10),
         roleId: 3,
@@ -31,6 +38,7 @@ describe("test stripe api payment", () => {
       const testBuyer = {
         name: "buyer123",
         username: "buyer123",
+        isVerified:true,
         email: "buyer1@example.com",
         password: await bcrypt.hash("password", 10),
       };
@@ -38,6 +46,7 @@ describe("test stripe api payment", () => {
       const testSeller = {
         name: "seller123",
         username: "seller123",
+        isVerified:true,
         email: "seller123@example.com",
         password: await bcrypt.hash("password", 10),
       };
