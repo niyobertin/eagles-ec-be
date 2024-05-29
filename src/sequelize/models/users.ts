@@ -15,6 +15,7 @@ export interface UserAttributes {
   lastPasswordUpdateTime?: Date;
   roleId: number | undefined;
   isActive?:boolean;
+  isVerified?:boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +28,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   password!: string;
   lastPasswordUpdateTime!:Date | undefined;
   isActive: boolean | undefined;
+  isVerified?: boolean | undefined;
   roleId!: number | undefined;
   createdAt!: Date | undefined;
   updatedAt!: Date | undefined;
@@ -72,6 +74,11 @@ User.init(
       type: DataTypes.BOOLEAN,
       allowNull:false,
       defaultValue:true
+    },
+    isVerified:{
+      type: DataTypes.BOOLEAN,
+      allowNull:false,
+      defaultValue:false
     },
     createdAt: {
       allowNull: false,

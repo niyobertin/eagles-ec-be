@@ -10,12 +10,11 @@ import User from "../src/sequelize/models/users";
 import bcrypt from "bcryptjs";
 import { Role } from "../src/sequelize/models/roles";
 import redisClient from "../src/config/redis";
-import { response } from "express";
 import { placeOrder } from "../src/services/payment.service";
 import Cart from "../src/sequelize/models/Cart";
-import CartItem from "../src/sequelize/models/CartItem";
 import OrderItem from "../src/sequelize/models/orderItems";
 import * as userService from "../src/services/user.service"
+import { generateVerificationToken } from "../src/utils/generateResetToken";
 
 jest.mock("../src/services/mail.service", () => ({
   sendEmailService: jest.fn(),
@@ -25,6 +24,7 @@ jest.mock("../src/services/mail.service", () => ({
 const userData: any = {
   name: "yvanna",
   username: "testuser",
+  isVerified:true,
   email: "test1@gmail.com",
   role:"seller",
   password: "test1234",
@@ -41,6 +41,7 @@ const product:any = {
     name: "pens",
     images: ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg"],
     stockQuantity: 8,
+    
     price: 5000,
     discount: 3.5,
     categoryID: 1,
@@ -49,6 +50,7 @@ const product:any = {
   const dummyBuyer = {
     name: "test user",
     username: "testUser",
+    isVerified:true,
     email: "soleil@soleil0w.com",
     password: "soleil00",    
   }
@@ -82,8 +84,7 @@ describe("Testing product Routes", () => {
           ])
          
           await User.create(testAdmin);
-      
-          const dummy = await request(app).post("/api/v1/users/register").send(dummySeller);
+          // await User.create(dummySeller);
         await Product.destroy({});
         await Category.destroy({truncate:true});
       } catch (error) {
@@ -97,6 +98,7 @@ describe("Testing product Routes", () => {
       await sequelize.close();
       await redisClient.quit()
     });
+  
     test("should return 201 and create a new user when registering successfully", async () => {
       const response = await request(app)
         .post("/api/v1/users/register")
@@ -110,7 +112,20 @@ describe("Testing product Routes", () => {
         .send(dummyBuyer);
         expect(response.status).toBe(201);
     })
+    test('should return 201 and register a dummy buyer user', async () => {
+      const response = await request(app)
+        .post("/api/v1/users/register")
+        .send(dummySeller);
+        expect(response.status).toBe(201);
+    })
     let buyerToken: any;
+    it("It should verify user account.",async()=>{
+      const token = generateVerificationToken('soleil@soleil0w.com', 60);
+      const response = await request(app)
+                      .get(`/api/v1/users/verify-user?token=${token}`)
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe('User verified successfully.')
+    },60000)
 
     test("should login an buyer", async () =>{
       const response = await request(app).post("/api/v1/users/login").send({
@@ -127,21 +142,37 @@ describe("Testing product Routes", () => {
         .send(product)
         expect(response.status).toBe(401);
     },2000);
-
+    
+    it("It should verify user account.",async()=>{
+      const token = generateVerificationToken('admin1@example.com', 60);
+      const response = await request(app)
+                      .get(`/api/v1/users/verify-user?token=${token}`)
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe('User verified successfully.')
+    },60000)
     test("should login an Admin", async () =>{
         const response = await request(app).post("/api/v1/users/login").send({
           email: "admin1@example.com",
-            password: "password"
+          password: "password"
       })
       adminToken = response.body.token;
+      expect(response.status).toBe(200)
     });
+    it("It should verify user account.",async()=>{
+      const token = generateVerificationToken(dummySeller.email, 60);
+      const response = await request(app)
+                      .get(`/api/v1/users/verify-user?token=${token}`)
+            expect(response.status).toBe(200)
+            expect(response.body.message).toBe('User verified successfully.')
+    },60000)
 
     test("should update dummyseller's role to seller", async () => {
         const logDummySeller = await request(app).post("/api/v1/users/login").send({
           email: dummySeller.email,
           password: dummySeller.password,
         });
-        expect(logDummySeller.status).toBe(200);
+        // expect(logDummySeller.status).toBe(200);
+        expect(logDummySeller.body.message).toBe('Logged in')
         token = logDummySeller.body.token;
 
         const seller = await userService.getUserByEmail(dummySeller.email)
@@ -154,6 +185,7 @@ describe("Testing product Routes", () => {
           })
           .set("Authorization", "Bearer " + adminToken);
         expect(response.status).toBe(200);
+        expect(response.body.message).toBe('User role updated successfully');
         
       });
 
@@ -482,7 +514,7 @@ test('It should return status 200 for removed category',async() =>{
   })
   it("changing product availability of product which does not exist", async ()=>{
     const response = await request(app)
-      .patch(`/api/v1/products/${91}/status`)
+      .patch(`/api/v1/products/${4444444}/status`)
       .set("Authorization", "Bearer " + token);
       expect(response.body.message).toBe('Product not found')      
   })

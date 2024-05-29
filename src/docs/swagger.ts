@@ -19,6 +19,7 @@ import {
   sendResetLink,
   updateForgotPassword,
   verifyUserAccessToken,
+  verifyUserEmail,
 } from "./users";
 import {
   getProducts,
@@ -39,7 +40,6 @@ import { getCategories, addCategories, getSingleCategory, updateCategories, dele
     deleteRole
   } from "./roledoc";
 import { AddToWishes, deleteWish, getWishes, getWishesByProduct, wishSchema } from "./wishes";
-import { joinChats } from "./chats";
 import { addItemToCartDoc, clearAllProductFromCartDoc, removeProductFromCartDoc, updateProductQuantityDoc, viewCartDoc } from "./cart";
 import { getAllNotifications, readNotification } from "./notifications";
 import { homepage } from "./home";
@@ -114,6 +114,9 @@ const options = {
     },
     "/api/v1/users/reset-password": {
       patch: updateForgotPassword,
+    },
+    "/api/v1/users/verify-user-email": {
+      post: verifyUserEmail,
     },
 
     "/api/v1/users/me": {
