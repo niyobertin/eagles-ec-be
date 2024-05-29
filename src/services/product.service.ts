@@ -86,9 +86,8 @@ export const getSingleProduct = async (req: Request, res: Response, id: string) 
 
 export const createProducts = async (data: ProductType) => {
   try {
-    const existingProduct = await Product.findOne({ where: { name: data.name } });
-    const user = await Product.findOne({ where: { userId: data.userId } });
-    if (existingProduct && user) {
+    const existingProduct = await Product.findOne({ where: { name: data.name, userId: data.userId } });
+    if (existingProduct) {
       return false;
     } else {
       const products = await Product.create(data);

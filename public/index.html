@@ -5,9 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eagles E-commerce Chat Room</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <style>
+                *{
+            margin: 0;
+            padding: 0; 
+        }
+        body{
+            background-color: #ebebeb;
+            font-family: 'Arial Narrow';
+            font-size: large;
+        }
+        h1,h4 {
+            text-align: center;
+        }
+        .main{
+            background-color: rgb(211, 209, 209);
+            display: flex;
+            justify-content: center;
+            justify-content: space-between;
+            flex: 1;
+            width: 100%;
+        }
+        .chat-room{
+            height: 29rem;
+            width: 100%;
+        }
+        .messages{
+        background-color:white;
+        height: 24.8rem;
+        width: 98%;
+        overflow-y: auto;
+        border-radius: 15px 15px 0px 0px;
+        border-bottom: 2px solid rgb(183, 181, 181);
+        margin-bottom: 0%;
+        }
+        .chat-area{
+            width: 80%; 
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+        .active_user{
+            background-color: rgb(183, 181, 181);
+            width: 25%;
+        }
+        .messages-right{
+            background-color: rgb(239, 235, 235);
+            width:50% ;
+            margin: 2%;
+            text-align: start;
+            height: fit-content;
+            padding: 2%;
+            border-radius: 20px 20px 20px 0px ;
+            list-style: none;
+        }
+        .message {
+            background-color: rgb(46, 44, 44);
+            width:50% ;
+            height: fit-content;
+            margin: 2%;
+            margin-left: 45%;
+            border-radius: 20px 20px 0px 20px ;
+            text-align: start;
+            padding: 2%;
+            color: white;
+        }
+        .messages-left{
+            background-color: rgb(46, 44, 44);
+            width:50% ;
+            height: fit-content;
+            margin: 2%;
+            margin-left: 45%;
+            border-radius: 20px 20px 0px 20px ;
+            text-align: start;
+            padding: 2%;
+            color: white;
+            list-style: none;
+            }
+            
+        .send-message{
+            display: flex;
+        }
+        .message-input{
+            width: 86%;
+            padding: 1%;
+            border: none;
+            font-size: large;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+        .messages-left,.messages-right > li{
+            text-decoration: none;
+            list-style: none;
+        }
+        .userName{
+            width: 80%;
+            padding: 2%;
+            border-radius: 20px;
+            border: none;  
+            background-color: rgb(211, 209, 209);
+        }
+        .user-name > span{
+            background-color: aliceblue;
+            padding: 1%;
+            border-radius: 50%;
+        }
+
+        button {
+            padding: 0%;
+            width:10%;
+            font-size: large;
+            background-color: rgb(90, 87, 87);
+            border: none;
+            cursor: pointer;
+            border-radius: 0px 0px 20px 0px ;
+        }
+        .sender{
+            font-size: small;
+        }
+        .active-list{
+        height: 29rem;
+        width: 98%;
+        color: rgb(0, 0, 0);
+        overflow-y: auto;
+        border-top: white solid 2px;
+        margin-bottom: 1%;
+        margin-left: 2%;
+        }
+        .active{
+            padding: 5%;
+        }
+    </style>
     <div class="login" id="login">
         <form action="" id="loginForm">
             <div class="email">
@@ -19,6 +147,14 @@
             <button type="submit">Login</button>
         </form>
     </div> 
+
+    <div class="TokenVerfication" id="TokenVerfication" style="display: none;">
+        <form action="" class= "verifyToken" id="verifyToken">
+            <span>verifyToken: </span><br/>
+             <input type="text" id="tokenVer"><br/>
+            <button type="submit">verify</button>
+         </form>
+    </div>
 
     <div class="main" id="chatRoom" style="display: none;">
         <div class="chat-area">
@@ -36,8 +172,137 @@
             </div>
         </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="login.js"></script>
-    <script src="client.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" 
+    integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const loginSection = document.getElementById("login");
+        const chatRoomSection = document.getElementById("chatRoom");
+        const verifyToken = document.getElementById("TokenVerfication");
+        const verifyTokenForm = document.getElementById("verifyToken");
+
+        const url = "https://eagles-ec-be-development.onrender.com/api/v1/users/login";
+        const loginUser = async (email, password) => {
+            try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error("Login failed");
+            }
+            const data = await response.json();
+            localStorage.setItem("loginToken", JSON.stringify(data.token));
+            const decodedToken = JSON.parse(atob(token.split(".")[1]));
+            if(decodedToken.otp){
+                showTokenVerfication();
+            }else{
+                showChatRoom();  
+            }
+            } catch (error) {
+            console.error(error.message);
+            }
+        };
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            await loginUser(email, password);
+            localStorage.setItem("loginToken", JSON.stringify(data.token));
+        });
+
+        
+        verifyTokenForm.addEventListener("submit", async(e) =>{
+            e.preventDefault();
+            const verifyToken = document.getElementById("tokenVer").value;
+            localStorage.setItem("loginToken", JSON.stringify(verifyToken));
+            showChatRoom();
+        })
+
+        const showChatRoom = () => {
+            loginSection.style.display = "none";
+            chatRoomSection.style.display = "block";
+        };
+        const showTokenVerfication = () => {
+            loginSection.style.display = "none";
+            verifyToken.style.display = "block";
+        };
+        });
+
+        const socket = io();
+        const form = document.getElementById("send-message");
+        const messageInput = document.getElementById("message-input");
+        const userNameInput = document.getElementById("user-name");
+        const chatsRoom = document.getElementById("messages");
+        const connectedClients = document.getElementById("active-number");
+        const active = document.getElementById("active-list");
+        const token = localStorage.getItem("loginToken");
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        let userId;
+        if (token) {
+        try {
+            const { id, name } = decodedToken;
+            userNameInput.value = name;
+            userId = id;
+            console.log(decodedToken);
+        } catch (error) {
+            console.error("Error parsing token:", error.message);
+        }
+        } else {
+        console.error("Token not found in local storage");
+        }
+
+        form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const message = messageInput.value;
+        const sender = userNameInput.value;
+        socket.emit("chat message", { sender, userId, message });
+        messageInput.value = "";
+        });
+
+        socket.on("connect", () => {
+        console.log("Connected to server");
+        });
+
+        socket.on("dis connected client", (clients) => {
+        connectedClients.innerHTML = clients;
+        });
+
+        socket.on("connected client", (clients) => {
+        connectedClients.innerHTML = clients;
+        });
+
+        socket.on("chat message", (msg) => {
+        addMessageToUi(msg.sender === userNameInput.value, msg);
+        });
+        socket.on("past messages", (messages) => {
+        const messagesList = document.getElementById("messages");
+        messagesList.innerHTML = "";
+
+        messages.forEach((msg) => {
+            addMessageToUi(msg.sender === userNameInput.value, msg);
+        });
+        });
+
+        const addMessageToUi = (isOwner, data) => {
+        const element = `
+            <li class ="${isOwner ? "messages-left" : "messages-right"}">
+                <p class="">
+                    ${data.message}</br>
+                    <i class="sender">${data.sender} . ${data.createdAt}</i>
+                </p>
+            </li>
+            `;
+        chatsRoom.innerHTML += element;
+        };
+
+
+    </script>
 </body>
 </html>

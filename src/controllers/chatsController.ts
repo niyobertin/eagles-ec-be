@@ -1,5 +1,6 @@
 import { Socket,Server } from "socket.io";
 import { Request,Response } from "express";
+import path from "path";
 import { newChatMessages, pastMessages} from "../services/chatServices";
 import { chatMessageSchema } from "../schemas/messageSchema";
 
@@ -28,9 +29,6 @@ export const  getPastMessages = async(socket:Socket) =>{
     };
 }
 export const joiRoom = async(req:Request,res:Response) => {
-    const element = `
-    <a href="/api/v1/chats">Login to join the room</a> 
-    `
-     res.send(element);
+    res.sendFile(path.resolve('public/index.html'))
 }
 

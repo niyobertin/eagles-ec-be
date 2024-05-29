@@ -19,11 +19,13 @@ import { findExpiredProduct } from "../jobs/cron";
 import { env } from "./env";
 
 const app = express();
+const isDevelopment = process.env.NODE_ENV === 'development';
+const origin = isDevelopment ? "http://localhost:3000" : "https://eagles-ec-be-development.onrender.com";
 
 const server: HTTPServer = createServer(app);
 export const io: SocketIOServer = new SocketIOServer(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: origin,
     methods: ["GET", "POST"],
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
     credentials: true,
@@ -55,8 +57,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use("/api/v1/chats", express.static(path.join(__dirname, '../../public')));
 
 app.use("/", homeRoute);
 app.use("/api/v1", appROutes);
