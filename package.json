@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "A platform providing a marketplace for buyers and sellers to meet",
   "main": "index.ts",
+  
   "scripts": {
     "pre-commit": "prettier . --write && eslint .",
     "lint": "eslint .",
