@@ -459,6 +459,12 @@ expect(response.body).toEqual({
 })
 })
 
+test("should return 200 when getting ads from aws lambda", async () => {
+  const response = await request(app)
+  .get("/api/v1/products/ads?query=Electronics");
+  expect(response.status).toBe(200);
+})
+
 test("Return 500 for handle error", async () => {
   const response = await request(app)
   .get("/api/v1/products/review")
